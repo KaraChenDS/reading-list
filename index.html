@@ -2017,6 +2017,13 @@ function b64dec(b64){
 }
 const SY_LAST_KEY = "dushu_last_sync", SY_ERR_KEY = "dushu_last_error";
 function syStatus(msg){ const el = $("#syStatus"); if(el) el.textContent = msg || ""; }
+/* fetch 抛出的 TypeError 基本都是「到不了 api.github.com」，把它说清楚 */
+function netMsg(e){
+  const m = String((e && e.message) || e || "");
+  if(/load failed|failed to fetch|networkerror|network request failed|fetch/i.test(m))
+    return "连不上 api.github.com —— 网络访问被限制或需要代理，不是令牌问题";
+  return "同步出错：" + m;
+}
 function markSyncOK(){
   localStorage.setItem(SY_LAST_KEY, String(Date.now()));
   localStorage.removeItem(SY_ERR_KEY);
@@ -2080,6 +2087,19 @@ function stableStr(o){
   if(o === null || typeof o !== "object") return JSON.stringify(o);
   if(Array.isArray(o)) return "[" + o.map(stableStr).join(",") + "]";
   return "{" + Object.keys(o).sort().map(k => JSON.stringify(k) + ":" + stableStr(o[k])).join(",") + "}";
+}
+
+/* 载荷签名：book 内容 + 事件（按 id 排序）用于比较两边是否一致 */
+function payloadSig(src){
+  const events = (src.events || []).slice()
+    .sort((a, b) => String(a.id) < String(b.id) ? -1 : 1);
+  return stableStr({ books: src.books || {}, events });
+}
+/* 本机是否比云端更全？是的话拉取之后必须回写云端。
+   没有这一步，一台「连接前就已经有本地记录」的设备会永远只拉不推，
+   它的数据就永远上不去（这正是手机→电脑不同步的原因）。 */
+function needsPushBack(remoteData){
+  return payloadSig({ books:S.books, events:S.events }) !== payloadSig(remoteData || {});
 }
 
 function mergeRemote(remote){
@@ -2157,7 +2177,7 @@ async function syncPush(silent){
     }
     markSyncOK();
     if(!silent) syStatus("已同步到云端 ✓");
-  }catch(e){ markSyncFail("上传出错：" + e.message); if(!silent) syStatus("上传出错：" + e.message); }
+  }catch(e){ const m = netMsg(e); markSyncFail(m); if(!silent) syStatus(m); }
 }
 
 async function syncPull(opts){
@@ -2178,12 +2198,18 @@ async function syncPull(opts){
       return;
     }
     const j = await r.json();
-    const n = mergeRemote(JSON.parse(b64dec(j.content)));
+    const remoteData = JSON.parse(b64dec(j.content));
+    const n = mergeRemote(remoteData);
     if(n){ save({ silent:true, noSync:true }); render(); }
     markSyncOK();
+    if(needsPushBack(remoteData)){
+      // 本机有云端没有的内容 → 回写，否则这些数据永远同步不出去
+      if(!silent) syStatus(n ? "已合并 " + n + " 处，正在回写本机数据…" : "本机数据比云端更全，正在回写…");
+      return syncPush(silent);
+    }
     if(!silent) syStatus(n ? "已合并 " + n + " 处云端更新 ✓" : "云端与本地已一致");
     if(n && silent) toast("已合并其他设备的 " + n + " 处更新", "ok");
-  }catch(e){ markSyncFail("网络出错：" + e.message); if(!silent) syStatus("下载出错：" + e.message); }
+  }catch(e){ const m = netMsg(e); markSyncFail(m); if(!silent) syStatus(m); }
 }
 
 function schedulePush(){

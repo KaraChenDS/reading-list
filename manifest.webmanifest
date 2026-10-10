@@ -6,13 +6,32 @@
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#12141c",
-  "theme_color": "#12141c",
+  "background_color": "#fdf9f0",
+  "theme_color": "#f7f3ea",
   "lang": "zh-CN",
-  "categories": ["books", "education", "productivity"],
+  "categories": [
+    "books",
+    "education",
+    "productivity"
+  ],
   "icons": [
-    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }
