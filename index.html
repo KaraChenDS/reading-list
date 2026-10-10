@@ -197,6 +197,8 @@ html[data-theme="dark"] .point.done .pt-idx{color:#0d1a12}
 .dot-ind{width:9px;height:9px;border-radius:50%;flex:none;display:inline-block}
 .dot-ind.ok{background:var(--ok);box-shadow:0 0 0 3px color-mix(in srgb,var(--ok) 22%,transparent)}
 .dot-ind.bad{background:var(--muted);opacity:.45}
+@keyframes spin{to{transform:rotate(360deg)}}
+.icon-btn.spin{animation:spin .9s linear infinite;color:var(--accent)}
 .quote.read{border-color:color-mix(in srgb,var(--ok) 40%,var(--line))}
 .myq{padding:10px 12px;border-radius:11px;background:color-mix(in srgb,var(--accent) 8%,transparent);
   border:1px solid color-mix(in srgb,var(--accent) 26%,var(--line));margin:8px 0;position:relative}
@@ -1480,7 +1482,9 @@ function renderTop(){
   }else{
     t.innerHTML = `<div class="brand"><span class="dot"></span>读书清单</div>
       <div class="top-spacer"></div>
-      <span class="hint">技术 PM 转商业</span>`;
+      <span class="hint">技术 PM 转商业</span>
+      ${isConnected() ? `<button class="icon-btn" id="syncBtn" data-sy="refresh" title="立即与云端同步">🔄</button>`
+                      : `<button class="icon-btn" data-go="settings" title="未连接同步">☁️</button>`}`;
   }
 }
 
@@ -2285,6 +2289,19 @@ async function handleSync(act){
   }
   if(act === "pull")  return syncPull();
   if(act === "push")  return syncPush();
+  if(act === "refresh"){
+    if(!isConnected()){ toast("还没连接同步", "err"); return; }
+    const btn = document.getElementById("syncBtn");
+    if(btn) btn.classList.add("spin");
+    try{
+      // 先合并云端 → 再把合并结果回写，一次点击完成双向同步
+      await syncPull({ silent:true });
+      await syncPush(true);
+      toast("已与云端同步", "ok");
+    }catch(e){ toast(netMsg(e), "err"); }
+    finally{ if(btn) btn.classList.remove("spin"); }
+    return;
+  }
   if(act === "diag"){
     const box = $("#syDiag");
     box.style.display = "block"; box.textContent = "正在诊断…";
