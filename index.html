@@ -2025,10 +2025,25 @@ function b64dec(b64){
 }
 const SY_LAST_KEY = "dushu_last_sync", SY_ERR_KEY = "dushu_last_error";
 function syStatus(msg){ const el = $("#syStatus"); if(el) el.textContent = msg || ""; }
+/* 令牌体检：返回 null 表示格式可用，否则返回人话原因。
+   含中文等非 ASCII 字符的令牌会让 fetch 直接抛 TypeError（请求头不合法），
+   极易被误判成「网络不通」，所以必须在发请求前就拦下。 */
+function tokenIssue(tok){
+  const t = String(tok == null ? "" : tok).trim();
+  if(!t) return "还没粘贴令牌";
+  if(/[^\x20-\x7E]/.test(t)) return "令牌里有中文或其它非法字符——多半是粘贴了说明里的占位符，请粘贴完整令牌";
+  if(/\s/.test(t)) return "令牌里有空格或换行，请重新完整复制一次";
+  if(t.length < 20) return "令牌只有 " + t.length + " 个字符，明显不完整（真实令牌是 40 或 90+ 个字符）";
+  if(!/^(github_pat_|ghp_|gho_|ghu_|ghs_|ghr_)/.test(t)) return "令牌前缀不像 GitHub 令牌（应以 github_pat_ 或 ghp_ 开头）";
+  return null;
+}
+
 /* fetch 抛出的 TypeError 基本都是「到不了 api.github.com」，把它说清楚 */
 function netMsg(e){
   const m = String((e && e.message) || e || "");
-  if(/load failed|failed to fetch|networkerror|network request failed|fetch/i.test(m))
+  const bad = tokenIssue(syncSettings().token);
+  if(bad) return bad;                       // 令牌本身就不合法，先别赖网络
+  if(/load failed|failed to fetch|networkerror|network request failed|invalid value|fetch/i.test(m))
     return "连不上 api.github.com —— 网络访问被限制或需要代理，不是令牌问题";
   return "同步出错：" + m;
 }
@@ -2166,7 +2181,8 @@ function mergeRemote(remote){
 
 async function syncPush(silent){
   const s = syncSettings();
-  if(!s.token){ if(!silent) syStatus("本机还没有连接同步。"); return; }
+  const bad = tokenIssue(s.token);
+  if(bad){ markSyncFail(bad); if(!silent) syStatus("❌ " + bad); return; }
   if(!silent) syStatus("正在上传…");
   try{
     let sha = null;
@@ -2192,7 +2208,8 @@ async function syncPush(silent){
 async function syncPull(opts){
   const silent = !!(opts && opts.silent);
   const s = syncSettings();
-  if(!s.token){ if(!silent) syStatus("本机还没有连接同步。"); return; }
+  const bad = tokenIssue(s.token);
+  if(bad){ markSyncFail(bad); if(!silent) syStatus("❌ " + bad); return; }
   if(!silent) syStatus("正在下载云端…");
   try{
     const r = await fetch(syncUrl(), { headers:syHeaders(s.token) });
@@ -2226,7 +2243,10 @@ async function runDiag(){
   const s = syncSettings(), out = [];
   const line = (ok, label, detail) => out.push((ok === null ? "○" : ok ? "✅" : "❌") + " " + label + (detail ? "：" + detail : ""));
 
-  line(!!s.token, "本机已保存令牌", s.token ? (s.token.slice(0, 14) + "…（共 " + s.token.length + " 字符）") : "尚未连接，请先粘贴令牌");
+  const issue = tokenIssue(s.token);
+  line(!!s.token, "本机已保存令牌", s.token ? (s.token.slice(0, 10) + "…（共 " + s.token.length + " 字符）") : "尚未连接，请先粘贴令牌");
+  line(!issue, "令牌格式", issue || ("看起来正常（" + s.token.length + " 字符，前缀 " + s.token.slice(0, 11) + "…）"));
+  if(issue){ out.push(""); out.push("⚠️ 令牌本身不合法，后面的检查没有意义。请到 GitHub 重新生成并完整复制。"); return out.join("\n"); }
   line(null, "同步目标", s.owner + "/" + s.repo + " → " + s.path);
 
   let net = false;
@@ -2266,7 +2286,8 @@ async function handleSync(act){
   const s = syncSettings();
   if(act === "connect"){
     const tok = ($("#syToken").value || "").trim();
-    if(!tok){ syStatus("还没粘贴令牌。"); return; }
+    const issue = tokenIssue(tok);
+    if(issue){ syStatus("❌ " + issue); toast(issue, "err"); return; }
     saveSyncSettings(Object.assign({}, s, { token: tok }));
     render();
     toast("正在连接…");
