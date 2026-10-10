@@ -1818,7 +1818,10 @@ function viewSettings(){
         <div class="btn-row" style="margin:9px 0">
           <button class="btn sm" data-sy="pull">立即拉取云端</button>
           <button class="btn sm" data-sy="push">立即上传本地</button>
+          <button class="btn sm" data-sy="diag">连接诊断</button>
         </div>
+        <pre id="syDiag" style="display:none;white-space:pre-wrap;font-size:12px;line-height:1.7;
+            background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:10px;margin:0 0 12px"></pre>
         <label class="fld"><span>数据仓库（owner/repo）</span>
           <input type="text" id="syRepoFull" value="${esc(syncTarget())}" /></label>
         <label class="fld"><span>文件路径</span>
@@ -2212,6 +2215,40 @@ async function syncPull(opts){
   }catch(e){ const m = netMsg(e); markSyncFail(m); if(!silent) syStatus(m); }
 }
 
+/* 连接诊断：逐环节检查，直接把断点说清楚 */
+async function runDiag(){
+  const s = syncSettings(), out = [];
+  const line = (ok, label, detail) => out.push((ok === null ? "○" : ok ? "✅" : "❌") + " " + label + (detail ? "：" + detail : ""));
+
+  line(!!s.token, "本机已保存令牌", s.token ? (s.token.slice(0, 14) + "…（共 " + s.token.length + " 字符）") : "尚未连接，请先粘贴令牌");
+  line(null, "同步目标", s.owner + "/" + s.repo + " → " + s.path);
+
+  let net = false;
+  try{
+    const t0 = Date.now();
+    // 只要拿到了 HTTP 响应就算「网络可达」——403 通常是限流，不代表不通
+    const r = await fetch("https://api.github.com/", { cache:"no-store" });
+    net = true;
+    const note = r.status === 403 ? "（403 通常是限流，网络本身是通的）" : "";
+    line(true, "能否访问 api.github.com", "HTTP " + r.status + note + "，耗时 " + (Date.now() - t0) + " ms");
+  }catch(e){ line(false, "能否访问 api.github.com", netMsg(e) + " —— 这是网络问题，不是令牌问题"); }
+
+  if(net && s.token){
+    try{
+      const r = await fetch(syncUrl(), { headers:syHeaders(s.token), cache:"no-store" });
+      if(r.status === 401)      line(false, "令牌是否有效", "HTTP 401 —— 令牌无效、已被吊销，或复制时缺字符");
+      else if(r.status === 403) line(false, "令牌权限", "HTTP 403 —— 缺少 Contents: Read and write 权限，或被限流");
+      else if(r.status === 404) line(true,  "仓库与文件", "HTTP 404 —— 仓库存在但文件还没创建（首次同步会自动创建）");
+      else if(r.status === 200){
+        const j = await r.json();
+        line(true, "读云端文件", "HTTP 200，当前 " + (j.size || 0) + " 字节");
+      }
+      else line(false, "读云端文件", "HTTP " + r.status);
+    }catch(e){ line(false, "读云端文件", netMsg(e)); }
+  }
+  return out.join("\n");
+}
+
 function schedulePush(){
   const s = syncSettings();
   if(!s.token || !isSyncAuto()) return;
@@ -2219,7 +2256,7 @@ function schedulePush(){
   pushTimer = setTimeout(() => syncPush(true), 2500);
 }
 
-function handleSync(act){
+async function handleSync(act){
   const s = syncSettings();
   if(act === "connect"){
     const tok = ($("#syToken").value || "").trim();
@@ -2248,6 +2285,12 @@ function handleSync(act){
   }
   if(act === "pull")  return syncPull();
   if(act === "push")  return syncPush();
+  if(act === "diag"){
+    const box = $("#syDiag");
+    box.style.display = "block"; box.textContent = "正在诊断…";
+    box.textContent = await runDiag();
+    return;
+  }
   if(act === "export"){
     const blob = new Blob([JSON.stringify(syncPayload(), null, 2)], { type:"application/json" });
     const a = document.createElement("a");
