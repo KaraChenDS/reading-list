@@ -1786,7 +1786,7 @@ function viewSettings(){
     <div class="card pad">
       <div class="set-row" style="padding-top:0">
         <div class="lab">
-          <b>${isConnected() ? "已连接 · 自动同步" : "尚未连接"}</b>
+          <b id="syLabel">${isConnected() ? "已连接 · 自动同步" : "尚未连接"}</b>
           <span>${isConnected()
             ? esc(syncTarget()) + " · 打开即合并，改动自动上传"
             : "在这台设备上粘贴一次访问令牌，之后完全不用再管"}</span>
@@ -2198,17 +2198,22 @@ const SYNC_BANNER_KEY = "dushu_sync_banner";
 
 /* 新设备一键连接：用 https://…/reading-list/#t=<令牌> 打开一次即可
    （令牌从地址栏里读走后就立刻抹掉，不留痕） */
-(function bootstrapTokenFromHash(){
+function bootstrapTokenFromHash(){
   const m = /[#&]t=([^&]+)/.exec(location.hash || "");
-  if(!m) return;
+  if(!m) return false;
   try{
     const tok = decodeURIComponent(m[1]).trim();
-    if(tok){
-      saveSyncSettings(Object.assign({}, syncSettings(), { token: tok }));
-      history.replaceState(null, "", location.pathname + location.search);
-    }
-  }catch(e){}
-})();
+    if(!tok) return false;
+    saveSyncSettings(Object.assign({}, syncSettings(), { token: tok }));
+    history.replaceState(null, "", location.pathname + location.search);
+    return true;
+  }catch(e){ return false; }
+}
+bootstrapTokenFromHash();
+// 页面已经打开着、又从别处收到带令牌的链接时（只变 hash 不重新加载）
+window.addEventListener("hashchange", () => {
+  if(bootstrapTokenFromHash()){ render(); autoPull(); }
+});
 
 load(); applyTheme(); render();
 
