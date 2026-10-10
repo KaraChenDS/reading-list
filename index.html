@@ -1,0 +1,2211 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="description" content="技术型产品经理转商业的待读清单：核心要点引导、可核查原文摘抄、读书历程记录，支持多端同步。" />
+<meta name="theme-color" content="#12141c" />
+<title>读书清单 · 技术 PM 转商业</title>
+<link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png" />
+<link rel="apple-touch-icon" href="icons/icon-180.png" />
+<link rel="manifest" href="manifest.webmanifest" />
+<style>
+/* ============================================================
+   主题变量
+   ============================================================ */
+:root{
+  --bg:#f7f3ea; --card:#fffdf8; --card2:#fbf7ee; --ink:#23201a; --muted:#7a7367;
+  --line:#e7ddca; --accent:#b4791f; --ok:#2f8f5b; --warn:#b8761f; --bad:#c0483f;
+  --shadow:0 2px 10px rgba(60,45,20,.07); --shadow2:0 6px 24px rgba(60,45,20,.12);
+  --radius:16px;
+}
+html[data-theme="dark"]{
+  --bg:#12141c; --card:#1b1e28; --card2:#191c25; --ink:#eae6dc; --muted:#9a958a;
+  --line:#2c3141; --accent:#e8b04b; --ok:#4ec98a; --warn:#e0a94b; --bad:#e8736a;
+  --shadow:0 2px 12px rgba(0,0,0,.35); --shadow2:0 8px 28px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink); min-height:100vh;
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  font-size:15px; line-height:1.65; -webkit-font-smoothing:antialiased;
+}
+.serif{font-family:ui-serif,Georgia,"Songti SC","Noto Serif SC",serif}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer;border:none;background:none}
+
+/* ============================================================
+   布局骨架
+   ============================================================ */
+.wrap{max-width:880px;margin:0 auto;padding:0 16px 96px}
+header.top{
+  position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid var(--line);
+}
+.top-in{max-width:880px;margin:0 auto;padding:11px 16px;display:flex;align-items:center;gap:10px}
+.brand{font-weight:700;font-size:17px;letter-spacing:.3px;display:flex;align-items:center;gap:8px}
+.brand .dot{width:22px;height:22px;border-radius:7px;background:linear-gradient(150deg,var(--accent),#8a5a12);display:inline-block}
+.top-spacer{flex:1}
+.icon-btn{
+  width:36px;height:36px;border-radius:11px;display:grid;place-items:center;font-size:17px;
+  color:var(--muted);border:1px solid transparent
+}
+.icon-btn:hover{background:var(--card);border-color:var(--line);color:var(--ink)}
+.back-btn{display:flex;align-items:center;gap:6px;font-size:15px;color:var(--muted);padding:6px 10px 6px 4px;border-radius:10px}
+.back-btn:hover{background:var(--card);color:var(--ink)}
+
+/* 底部导航 */
+nav.tabbar{
+  position:fixed;left:0;right:0;bottom:0;z-index:40;border-top:1px solid var(--line);
+  background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:saturate(180%) blur(14px);
+  padding-bottom:env(safe-area-inset-bottom)
+}
+.tabbar-in{max-width:880px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr)}
+.tabbar button{
+  padding:9px 4px 10px;display:flex;flex-direction:column;align-items:center;gap:2px;
+  font-size:11px;color:var(--muted);transition:color .15s
+}
+.tabbar button .ti{font-size:19px;line-height:1.1}
+.tabbar button.on{color:var(--accent);font-weight:600}
+
+/* ============================================================
+   通用组件
+   ============================================================ */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.card+.card{margin-top:14px}
+.pad{padding:16px}
+h1{font-size:22px;margin:0 0 4px}
+h2{font-size:17px;margin:0}
+h3{font-size:15px;margin:0}
+.sec-title{font-size:13px;font-weight:700;color:var(--muted);letter-spacing:1.2px;margin:26px 0 10px}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.tiny{font-size:12px}
+.hint{color:var(--muted);font-size:12.5px;line-height:1.6}
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;padding:2px 9px;border-radius:999px;background:var(--card2);border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.pill.ok{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 35%,var(--line))}
+.pill.warn{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 35%,var(--line))}
+.pill.acc{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 40%,var(--line))}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:9px 15px;border-radius:11px;border:1px solid var(--line);background:var(--card);
+  font-size:14px;font-weight:500;transition:.15s
+}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+html[data-theme="dark"] .btn.primary{color:#1a1206}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.ghost{background:transparent}
+.btn.sm{padding:6px 11px;font-size:13px;border-radius:9px}
+.btn-row{display:flex;gap:9px;flex-wrap:wrap}
+input[type=text],input[type=password],input[type=date],textarea,select{
+  width:100%;padding:9px 12px;border-radius:11px;border:1px solid var(--line);
+  background:var(--card2);outline:none;transition:.15s
+}
+input:focus,textarea:focus,select:focus{border-color:var(--accent);background:var(--card)}
+textarea{resize:vertical;line-height:1.6;min-height:64px}
+label.fld{display:block;margin-bottom:11px}
+label.fld>span{display:block;font-size:12.5px;color:var(--muted);margin-bottom:5px}
+.empty{text-align:center;padding:44px 20px;color:var(--muted)}
+.empty .big{font-size:38px;margin-bottom:10px;opacity:.6}
+
+/* 进度条 */
+.bar{height:6px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar>i{display:block;height:100%;border-radius:99px;background:var(--accent);transition:width .4s}
+
+/* ============================================================
+   书架
+   ============================================================ */
+.stat-card{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;overflow:hidden}
+.stat{padding:14px 10px;text-align:center}
+.stat+.stat{border-left:1px solid var(--line)}
+.stat b{display:block;font-size:21px;line-height:1.25;font-variant-numeric:tabular-nums}
+.stat span{font-size:11.5px;color:var(--muted)}
+
+.book-card{padding:15px;display:block;width:100%;text-align:left;transition:.18s;border-radius:var(--radius);
+  background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);margin-top:14px}
+.book-card:hover{transform:translateY(-2px);box-shadow:var(--shadow2);border-color:color-mix(in srgb,var(--c) 45%,var(--line))}
+.bc-top{display:flex;gap:13px;align-items:flex-start}
+.cover{
+  width:52px;height:74px;border-radius:5px 9px 9px 5px;flex:none;position:relative;
+  background:linear-gradient(155deg,color-mix(in srgb,var(--c) 92%,#fff),color-mix(in srgb,var(--c) 72%,#000));
+  box-shadow:0 3px 10px color-mix(in srgb,var(--c) 35%,transparent);overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.cover::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:rgba(0,0,0,.22)}
+.cover span{font-size:10px;color:#fff;writing-mode:vertical-rl;letter-spacing:1.5px;font-weight:700;
+  text-shadow:0 1px 3px rgba(0,0,0,.35);padding:4px 0;max-height:100%;overflow:hidden}
+.bc-info{flex:1;min-width:0}
+.bc-info h3{font-size:16.5px;margin-bottom:2px;font-weight:700}
+.bc-sub{font-size:12.5px;color:var(--muted);margin-bottom:7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bc-prog{display:flex;align-items:center;gap:9px;margin-top:9px}
+.bc-prog .bar{flex:1}
+.bc-prog b{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;font-weight:600}
+.ring{width:46px;height:46px;flex:none;position:relative}
+.ring svg{transform:rotate(-90deg)}
+.ring b{position:absolute;inset:0;display:grid;place-items:center;font-size:11.5px;font-variant-numeric:tabular-nums}
+
+/* ============================================================
+   书籍详情
+   ============================================================ */
+.book-hero{display:flex;gap:16px;align-items:flex-start;padding:18px 16px}
+.book-hero .cover{width:74px;height:106px}
+.book-hero .cover span{font-size:11px}
+.hero-meta h1{font-size:20px;line-height:1.35}
+.hero-meta .en{font-size:12.5px;color:var(--muted);margin:2px 0 5px;font-style:italic}
+.value-card{padding:14px 16px;border-left:3px solid var(--c);border-radius:12px;background:var(--card2)}
+.value-card h3{font-size:12.5px;color:var(--muted);letter-spacing:.8px;margin-bottom:6px;font-weight:700}
+
+/* 要点 */
+.point{padding:14px 15px}
+.point+.point{border-top:1px solid var(--line)}
+.pt-head{display:flex;gap:11px;align-items:flex-start;cursor:pointer}
+.pt-idx{
+  width:24px;height:24px;flex:none;border-radius:8px;display:grid;place-items:center;
+  font-size:12px;font-weight:700;background:var(--card2);border:1px solid var(--line);color:var(--muted);
+  font-variant-numeric:tabular-nums;margin-top:1px
+}
+.point.done .pt-idx{background:var(--ok);border-color:var(--ok);color:#fff}
+html[data-theme="dark"] .point.done .pt-idx{color:#0d1a12}
+.pt-t{flex:1;min-width:0}
+.pt-t h3{font-size:15px;line-height:1.5;font-weight:650}
+.pt-t .where{font-size:11.5px;color:var(--muted);margin-top:3px}
+.pt-caret{color:var(--muted);font-size:13px;transition:transform .2s;padding:2px 4px}
+.point.open .pt-caret{transform:rotate(90deg)}
+.pt-body{display:none;margin-top:12px;padding-left:35px}
+.point.open .pt-body{display:block}
+.pt-body .what{margin-bottom:9px}
+.pt-body .why{font-size:13.5px;color:var(--muted);padding-left:11px;border-left:2px solid var(--line);margin-bottom:13px}
+.pt-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.toggle-done{
+  display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:10px;
+  border:1px solid var(--line);font-size:13px;background:var(--card)
+}
+.toggle-done.on{background:color-mix(in srgb,var(--ok) 14%,transparent);border-color:var(--ok);color:var(--ok);font-weight:600}
+
+/* 摘抄 */
+.quote{margin:9px 0;padding:11px 13px;border-radius:12px;background:var(--card2);border:1px solid var(--line)}
+.quote .en{font-size:13.5px;line-height:1.6;color:var(--ink);font-family:ui-serif,Georgia,serif}
+.quote .zh{font-size:13.5px;margin-top:7px;padding-top:7px;border-top:1px dashed var(--line)}
+.quote .src{font-size:11.5px;color:var(--muted);margin-top:7px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.qnote{font-size:11.5px;color:var(--muted);margin-top:8px;padding-top:7px;border-top:1px dashed var(--line);line-height:1.55}
+.qnote::before{content:"ⓘ "}
+.sec-hint{font-size:12.5px;color:var(--muted);line-height:1.6;margin:-4px 0 10px;padding-left:2px}
+.dot-ind{width:9px;height:9px;border-radius:50%;flex:none;display:inline-block}
+.dot-ind.ok{background:var(--ok);box-shadow:0 0 0 3px color-mix(in srgb,var(--ok) 22%,transparent)}
+.dot-ind.bad{background:var(--muted);opacity:.45}
+.quote.read{border-color:color-mix(in srgb,var(--ok) 40%,var(--line))}
+.myq{padding:10px 12px;border-radius:11px;background:color-mix(in srgb,var(--accent) 8%,transparent);
+  border:1px solid color-mix(in srgb,var(--accent) 26%,var(--line));margin:8px 0;position:relative}
+.myq .t{font-size:13.5px;white-space:pre-wrap}
+.myq .m{font-size:11.5px;color:var(--muted);margin-top:5px;display:flex;gap:8px;align-items:center}
+.myq .del{position:absolute;top:7px;right:9px;color:var(--muted);font-size:13px;opacity:.5}
+.myq .del:hover{opacity:1;color:var(--bad)}
+.slot{
+  padding:11px 13px;border-radius:12px;border:1px dashed color-mix(in srgb,var(--muted) 45%,transparent);
+  color:var(--muted);font-size:12.5px;text-align:center;margin:9px 0
+}
+.sub-h{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.8px;margin:15px 0 6px}
+
+/* 热力图 */
+.hm-wrap{display:flex;gap:6px;align-items:stretch}
+.hm-days{display:grid;grid-template-rows:repeat(7,1fr);gap:3px;font-size:9.5px;color:var(--muted)}
+.hm-days span{display:flex;align-items:center;justify-content:center;line-height:1}
+.hm{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;flex:1;max-width:470px}
+.hm-col{display:grid;grid-template-rows:repeat(7,auto);gap:3px}
+.hm-c{aspect-ratio:1;width:100%;border-radius:4px;background:var(--line);display:block}
+.hm-c.l1{background:color-mix(in srgb,var(--accent) 32%,var(--line))}
+.hm-c.l2{background:color-mix(in srgb,var(--accent) 62%,var(--line))}
+.hm-c.l3{background:var(--accent)}
+.hm-c.fut{opacity:.22}
+.hm-legend{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--muted);margin-top:12px}
+.hm-legend .hm-c{width:11px;height:11px;aspect-ratio:auto}
+
+/* ============================================================
+   历程
+   ============================================================ */
+.tl{position:relative;padding-left:26px}
+.tl::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:1.5px;background:var(--line)}
+.tl-day{font-size:12px;font-weight:700;color:var(--muted);margin:18px 0 8px;position:relative;left:-26px;padding-left:26px}
+.tl-item{position:relative;padding:7px 0 7px 0;font-size:13.5px}
+.tl-item::before{
+  content:"";position:absolute;left:-22px;top:13px;width:9px;height:9px;border-radius:50%;
+  background:var(--card);border:2px solid var(--accent)
+}
+.tl-item .tm{font-size:11.5px;color:var(--muted);margin-left:8px;font-variant-numeric:tabular-nums}
+.tl-item .bk{font-size:11.5px;color:var(--muted);display:block;margin-top:1px}
+.tl-item.ok::before{background:var(--ok);border-color:var(--ok)}
+
+/* ============================================================
+   设置
+   ============================================================ */
+.set-row{display:flex;align-items:center;gap:12px;padding:13px 0}
+.set-row+.set-row{border-top:1px solid var(--line)}
+.set-row .lab{flex:1;min-width:0}
+.set-row .lab b{font-weight:600;font-size:14.5px;display:block}
+.set-row .lab span{font-size:12.5px;color:var(--muted)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--card2)}
+.seg button{padding:6px 12px;font-size:13px;color:var(--muted)}
+.seg button.on{background:var(--accent);color:#fff;font-weight:600}
+html[data-theme="dark"] .seg button.on{color:#1a1206}
+.status{font-size:12.5px;color:var(--muted);margin-top:9px;min-height:18px}
+.code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;background:var(--card2);
+  padding:2px 6px;border-radius:6px;border:1px solid var(--line)}
+details.tips{margin-top:11px;font-size:12.5px;color:var(--muted)}
+details.tips summary{cursor:pointer;color:var(--accent)}
+details.tips .in{padding:9px 0 2px}
+
+/* toast */
+#toast{
+  position:fixed;left:50%;bottom:86px;transform:translateX(-50%) translateY(20px);z-index:60;
+  background:#2b2b2b;color:#fff;padding:10px 18px;border-radius:12px;font-size:13.5px;
+  opacity:0;pointer-events:none;transition:.25s;max-width:82vw;text-align:center;box-shadow:var(--shadow2)
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.err{background:var(--bad)}
+#toast.ok{background:var(--ok)}
+@media (max-width:520px){
+  .stat b{font-size:18px}
+  .wrap{padding:0 12px 96px}
+  .pt-body{padding-left:0}
+  .book-hero{padding:15px 13px}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in" id="topbar"></div>
+</header>
+
+<main class="wrap" id="view"></main>
+
+<nav class="tabbar">
+  <div class="tabbar-in" id="tabbar"></div>
+</nav>
+
+<div id="toast"></div>
+
+<script>
+/* ============================================================
+   1. 书单内容数据
+   —— 由检索核实生成：要点用于引导阅读；原文引用只保留可公开
+      核查的，核查不到的放进 doubtful；没有可核查原文的要点留空位，
+      由「我的摘抄」承接。
+   ============================================================ */
+/* @BOOKS_START@ */
+const BOOKS = [
+  {
+    "id": "renshi",
+    "title": "认识商业",
+    "en": "Understanding Business",
+    "author": "威廉·尼科尔斯 / 詹姆斯·麦克休 / 苏珊·麦克休（William G. Nickels / James M. McHugh / Susan M. McHugh）",
+    "edition": "首版 1987；McGraw-Hill 持续更新至第 13 版（2021）。中译：世界图书出版公司 2009（第 8 版）；后浪·世界图书 2016 与四川人民 2018（插图修订第 10 版）；机械工业出版社·华章 2020（原书第 12 版，何峻/许俊农 译）、2022 平装本；原书第 13 版中译（何峻 译）",
+    "color": "#c9862b",
+    "spine": "商业",
+    "quoteNote": "这本书是教材，值得摘抄的「金句」其实就是它的定义句。以下英文原句均在 Google Books 电子版全文做逐字短语检索命中（对应 2012 全球版内容），是四本书里核查强度最高的一批——但要注意中译本各版章节划分不同（第 10 版中译与第 12/13 版中译的章号不一致），对照页码时请按自己手上的版本核对。",
+    "value": "它提供的是一整套把产品语言翻译成经营语言的公共词汇表——利润与现金流、利益相关者、资本结构与融资、营销组合、组织与控制——让你第一次能用「整家公司的损益与风险」这把尺子做决策，而不是「这个功能好不好」这把尺子。",
+    "points": [
+      {
+        "id": "rs-1",
+        "name": "商业与利润的定义：一切经营活动必须落到正利润",
+        "what": "商业是「为他人提供商品与服务、并在此过程中获利」的活动；利润 = 收入 − 支出，支出大于收入即为亏损。",
+        "why": "全书的地基，也是转型的第一道心锚：它把「做功能、做体验」重新锚定为「必须产生正利润的商业活动」，并引入「风险—报酬」对称性——你承担风险，才有资格谈报酬。",
+        "where": "第 1 章 动态商业环境中的冒险与获利",
+        "quotes": [
+          {
+            "en": "business Any activity that seeks to provide goods and services to others while operating at a profit.",
+            "zh": "",
+            "src": "https://books.google.com/books/feeds/volumes?q=%22business+is+any+activity+that+seeks+to+provide+goods+and+services%22",
+            "conf": "verified",
+            "note": "Google Books 电子版全文逐字命中。这是教材里的定义原文，值得逐字记住"
+          },
+          {
+            "en": "Profit is the amount of money a business earns above and beyond what it spends for salaries and other expenses needed to run the operation. A loss occurs when a business's expenses are more than its revenues.",
+            "zh": "",
+            "src": "https://books.google.com/books/feeds/volumes?q=%22the+total+amount+of+money+a+business+takes+in+during+a+given+period%22",
+            "conf": "verified",
+            "note": "Google Books 全文逐字命中。同处还给出 revenue（一段时期内通过销售获得的全部金额）的定义"
+          }
+        ]
+      },
+      {
+        "id": "rs-2",
+        "name": "利益相关者视角：不是只对用户负责",
+        "what": "利益相关者是所有会因企业的政策与活动而受益或受损、且企业需要回应其关切的人——客户、员工、股东、供应商、经销商乃至社区。",
+        "why": "技术型 PM 习惯单线程的「用户价值」，这一条把它替换为多目标权衡。这是转型过程中最难改的一根思维钢钉：用户满意但公司亏钱、股东退出，生意依然不成立。",
+        "where": "第 1 章「商业环境」一节",
+        "quotes": [
+          {
+            "en": "Stakeholders are all the people who stand to gain or lose by the policies and activities of a business and whose concerns the business needs to address.",
+            "zh": "",
+            "src": "https://books.google.com/books/feeds/volumes?q=%22Stakeholders+are+all+the+people+who+stand+to+gain+or+lose+by+the+policies+and+activities+of+a+business%22",
+            "conf": "verified",
+            "note": "Google Books 全文逐字命中"
+          }
+        ]
+      },
+      {
+        "id": "rs-3",
+        "name": "经济学环境：外部变量如何传导到你的产品优先级",
+        "what": "经济学研究社会如何选择把资源配置到商品与服务的生产，并在互相竞争的群体与个人之间分配这些产出。供求、价格、竞争、经济指标、财政与货币政策构成企业无法控制的外部约束。",
+        "why": "它让你建立一条传导链：宏观变量 → 公司预算与定价 → 你自己的产品优先级。技术出身的人常把外部环境当背景噪音，这一章把它变成决策输入。",
+        "where": "第 2 章 了解经济学及其对商业的影响",
+        "quotes": [
+          {
+            "en": "Economics is the study of how society chooses to employ resources to produce goods and services and distribute them for consumption among various competing groups and individuals.",
+            "zh": "",
+            "src": "https://books.google.com/books/feeds/volumes?q=%22Economics+is+the+study+of+how+society+chooses+to+employ+resources%22",
+            "conf": "verified",
+            "note": "Google Books 全文逐字命中"
+          }
+        ]
+      },
+      {
+        "id": "rs-4",
+        "name": "全球化与比较优势：出海与外包的第一原理",
+        "what": "进口是向他国购买产品，出口是向他国销售产品；比较优势理论主张一国应出售自己生产效率最高的产品，买进自己生产得没那么高效的产品。",
+        "why": "为「要不要出海、哪些环节外包、供应链放在哪」提供第一原理，而不是跟风决策。这套逻辑同样适用于个人：你该把时间卖给你效率最高的那件事。",
+        "where": "第 3 章 在全球市场开展业务",
+        "quotes": [
+          {
+            "en": "Importing is buying products from another country. Exporting is selling products to another country.",
+            "zh": "",
+            "src": "https://books.google.com/books/feeds/volumes?q=%22Importing+is+buying+products+from+another+country%22",
+            "conf": "verified",
+            "note": "Google Books 全文逐字命中"
+          },
+          {
+            "en": "comparative advantage theory Theory that states that a country should sell to other countries those products that it produces most effectively and efficiently, and buy from other countries those products that it cannot produce as effectively or efficiently.",
+            "zh": "",
+            "src": "https://books.google.com/books/feeds/volumes?q=%22sell+to+other+countries+those+products+that+it+produces+most+effectively%22",
+            "conf": "verified",
+            "note": "Google Books 全文逐字命中"
+          }
+        ]
+      },
+      {
+        "id": "rs-5",
+        "name": "道德、社会责任与法律合规：两类准则",
+        "what": "合规导向的道德准则（compliance-based）靠加强控制与惩罚来阻止违法行为；诚信导向的准则（integrity-based）靠价值观与自省。书中把企业社会责任作为独立议题，并另有专章讲法律环境。",
+        "why": "技术团队最常低估的就是合规与伦理风险的成本。这一模块把「上线速度」和「可承担的监管与声誉风险」放进同一张账——很多产品决策真正的约束在这里，而不在技术可行性。",
+        "where": "第 4 章；另见附赠章节 A《在法律环境中经营》",
+        "quotes": [
+          {
+            "en": "compliance-based ethics codes Ethical standards that emphasize preventing unlawful behavior by increasing control and by penalizing wrongdoers.",
+            "zh": "",
+            "src": "https://books.google.com/books/feeds/volumes?q=%22compliance-based+ethics+codes%22",
+            "conf": "verified",
+            "note": "Google Books 全文逐字命中。integrity-based ethics codes 的定义在同一处，但检索片段被截断，故未收录"
+          },
+          {
+            "en": "business law The rules, statutes, codes, and regulations that provide a legal framework for the conduct of business",
+            "zh": "",
+            "src": "https://books.google.com/books/feeds/volumes?q=%22rules%2C+statutes%2C+codes%2C+and+regulations+that+provide+a+legal+framework+for+the+conduct+of+business%22",
+            "conf": "verified",
+            "note": "Google Books 全文逐字命中（2012 全球版措辞）。1993 年第 3 版措辞不同，可用于观察跨版变化"
+          }
+        ]
+      },
+      {
+        "id": "rs-6",
+        "name": "企业所有权形式与创业：股权、责任边界与激励结构",
+        "what": "独资、合伙、公司制在责任与税负上的差异，以及兼并收购、特许经营、合作社；企业家是承担时间与金钱风险去创办并经营企业的人。",
+        "why": "这是「打工的技术管理者」理解股权、责任边界、控股权与激励结构的入口，也是判断「自己开公司，还是留在体制内做内部创业」的依据。",
+        "where": "第 5–6 章",
+        "quotes": [
+          {
+            "en": "An entrepreneur is a person who risks time and money to start and manage a business.",
+            "zh": "",
+            "src": "https://books.google.com/books/feeds/volumes?q=%22An+entrepreneur+is+a+person+who+risks+time+and+money+to+start+and+manage+a+business%22",
+            "conf": "verified",
+            "note": "Google Books 全文逐字命中。注意定义里的关键词是 risks——风险承担，而不是「有想法」"
+          }
+        ]
+      },
+      {
+        "id": "rs-7",
+        "name": "管理与领导的四职能：补上你最缺的「控制」",
+        "what": "管理是通过规划、组织、领导与控制人和组织资源来达成组织目标的过程。（较早版本用 directing，后改为 leading。）",
+        "why": "把 PM 熟悉的「规划、协调」扩展成完整闭环，并补上「控制」——衡量、纠偏、追责。这恰恰是产品经理最薄弱的经营动作：定了目标却没有闭环。",
+        "where": "第 7 章 管理和领导",
+        "quotes": [
+          {
+            "en": "Management is the process used to accomplish organizational goals through planning, organizing, leading, and controlling people and other organizational resources",
+            "zh": "",
+            "src": "https://books.google.com/books/feeds/volumes?q=%22Management+is+the+process+used+to+accomplish+organizational+goals+through+planning%22",
+            "conf": "verified",
+            "note": "Google Books 全文逐字命中。1993 年第 3 版同一句用的是 planning, organizing, directing, and controlling，可对照「directing 后来改为 leading」"
+          }
+        ]
+      },
+      {
+        "id": "rs-8",
+        "name": "组织结构与运营管理：组织形态决定交付速度与成本结构",
+        "what": "集中与分权、管理跨度、组织模式选择与变革管理；以及从生产管理到运营管理——运营管理是把资源（含人力资源）转换成商品与服务的专门领域，含流程设计与 PERT、甘特图等控制工具。",
+        "why": "技术型经营者常以为「组织是 HR 的事」。这两章说明组织结构本身就决定交付速度与成本结构，也是你把技术流程改造权握在手里的前提。",
+        "where": "第 8–9 章",
+        "quotes": [
+          {
+            "en": "operations management A specialized area in management that converts or transforms resources (including human resources) into goods and services.",
+            "zh": "",
+            "src": "https://books.google.com/books/feeds/volumes?q=%22a+specialized+area+in+management+that+converts+resources+into+goods+and+services%22",
+            "conf": "verified",
+            "note": "Google Books 全文逐字命中"
+          }
+        ]
+      },
+      {
+        "id": "rs-9",
+        "name": "激励与人力资源：从「靠事带人」到「靠动机带人」",
+        "what": "马斯洛、赫茨伯格、X/Y 理论、期望理论与公平理论、目标管理；招聘、培训、绩效评估、薪酬排班，以及工会与劳资争议。内在报酬是你在表现出色、完成目标时感到的个人满足。",
+        "why": "技术管理者普遍靠「事」带人——把任务讲清楚就算管理。这里提供的是靠「制度与动机」带人的工具箱，也解释了为什么人才成本是经营模型里最难压缩、也最该投入的一项。",
+        "where": "第 10–12 章",
+        "quotes": [
+          {
+            "en": "An intrinsic reward is the personal satisfaction you feel when you perform well and complete goals.",
+            "zh": "",
+            "src": "https://books.google.com/books/feeds/volumes?q=%22An+intrinsic+reward+is+the+personal+satisfaction+you+feel+when+you+perform+well%22",
+            "conf": "verified",
+            "note": "Google Books 全文逐字命中。与 extrinsic reward（外部报酬，如薪酬）对照记忆"
+          }
+        ]
+      },
+      {
+        "id": "rs-10",
+        "name": "营销：把「技术驱动的好产品」翻译成「客户愿意付钱的理由」",
+        "what": "营销是识别需求，并用产品、价格、渠道、推广的组合去满足它；包含产品开发、包装、品牌资产、产品生命周期、定价与非价格竞争。书中引用了美国营销协会的定义。",
+        "why": "这是技术型创业者最常出现的致命短板：默认「东西好就会有人买」。这一章提供的是一套把技术优势转译成购买理由的语言。",
+        "where": "第 13–14 章",
+        "quotes": [
+          {
+            "en": "American Marketing Association has defined marketing as the activity, set of institutions, and processes for creating, communicating, delivering, and exchanging offerings",
+            "zh": "",
+            "src": "https://books.google.com/books/feeds/volumes?q=%22creating%2C+communicating%2C+delivering%2C+and+exchanging+offerings%22",
+            "conf": "verified",
+            "note": "Google Books 全文逐字命中，但注意这是书中转引 AMA 的定义，不是作者原创句"
+          }
+        ]
+      },
+      {
+        "id": "rs-11",
+        "name": "会计与财务管理：读懂三张表和现金周期",
+        "what": "会计是对财务事件与交易的记录、分类、汇总与解释，以便管理层与其他利益相关方做出好决策；财务是为企业取得资金并在企业内部管理这些资金的职能。含三大报表、比率分析、营运资金与长短期融资。",
+        "why": "全书中对「技术转经营者」回报最直接的两章。读懂三张表与现金周期，才能判断自己的产品线究竟在赚钱还是在消耗现金——这是「功能好不好」之外的另一种真相。",
+        "where": "第 17–18 章",
+        "quotes": [
+          {
+            "en": "Accounting is the recording, classifying, summarizing, and interpreting of financial events and transactions in an organization to provide management and other interested parties the financial information they need to make good decisions.",
+            "zh": "",
+            "src": "https://books.google.com/books/feeds/volumes?q=%22Accounting+is+the+recording%2C+classifying%2C+summarizing%2C+and+interpreting+of+financial+events%22",
+            "conf": "verified",
+            "note": "Google Books 全文逐字命中"
+          },
+          {
+            "en": "Finance is the function in a business that acquires funds for the firm and manages them within the firm.",
+            "zh": "",
+            "src": "https://books.google.com/books/feeds/volumes?q=%22Finance+is+the+function+in+a+business+that+acquires+funds+for+the+firm%22",
+            "conf": "verified",
+            "note": "Google Books 全文逐字命中"
+          }
+        ]
+      },
+      {
+        "id": "rs-12",
+        "name": "证券市场、金融机构与知识管理：看懂「公司的钱从哪来」",
+        "what": "股票与债券融资、共同基金与 ETF、股市指标；货币供应、美联储与美国银行体系；以及知识管理——找到合适的信息、把它放在容易取得的地方、让企业里每个人都知道。",
+        "why": "让技术出身者看懂「公司拿谁的钱、钱的价格是什么」。知识管理这一条则给出把个人与团队的技术经验转成可复用组织资产的方法——对带团队的技术管理者尤其直接。",
+        "where": "第 19–20 章及扩充内容（知识管理见于「用技术管理信息」章节）",
+        "quotes": [
+          {
+            "en": "Finding the right information, keeping it in a readily accessible place, and making it known to everyone in the firm together constitute the tasks of knowledge management.",
+            "zh": "找到适合的信息，把信息放在容易得到的地方，让企业中的每个人了解这些信息，这三者共同组成了知识管理。",
+            "src": "https://book.douban.com/annotation/41773870/",
+            "conf": "verified",
+            "note": "英文 Google Books 全文逐字命中；中文为公开译本摘录（豆瓣，标注引自第 196 页）——这是本书唯一找到公开中译的一句。豆瓣条目跨版本标注，页码请按自己手上版本核对"
+          },
+          {
+            "en": "A bond is a corporate certificate indicating that an investor has lent money to a firm (or a government).",
+            "zh": "",
+            "src": "https://books.google.com/books/feeds/volumes?q=%22A+bond+is+a+corporate+certificate+indicating+that+a+person+has+lent+money%22",
+            "conf": "verified",
+            "note": "Google Books 全文逐字命中"
+          }
+        ]
+      }
+    ],
+    "doubtful": [
+      {
+        "text": "首版是 1986 年",
+        "why": "未核查。可核查到的最早记录是 1987 年（Times Mirror/Mosby College Pub.，ISBN 0801636272）。"
+      },
+      {
+        "text": "第 13 版中译本的出版年，以及它只有 402 页（12 版中译 640 页）是否意味着删节",
+        "why": "未核查。豆瓣条目未列出版年；2022 年机工版 504 页是否为精简本也无法确认。"
+      },
+      {
+        "text": "2026 年的两条新记录（ISBN 9781264537990 / 9781266492891）是否就是第 14 版",
+        "why": "未核查。其中一本书名记为 Understanding Business: The Core，可能只是精简本。"
+      },
+      {
+        "text": "上述英文引用在第 13 版或第 10 版中译本中的逐字一致性与对应页码",
+        "why": "未核查。命中的电子版大致对应第 10 版内容，教材各版会改写定义措辞，跨版页码不可直接套用。"
+      },
+      {
+        "text": "营销组合、股票、小企业、电子商务等若干定义的原句",
+        "why": "多次逐字检索未命中，因此没有列入正式引用列表——宁缺勿错。"
+      }
+    ]
+  },
+  {
+    "id": "zhanlue",
+    "title": "好战略，坏战略",
+    "en": "Good Strategy Bad Strategy",
+    "author": "理查德·鲁梅尔特（Richard P. Rumelt）",
+    "edition": "Crown Business 2011 初版；中信出版社 2012（蒋宗强 译，ISBN 9787508635446），2017 再版",
+    "color": "#3f7bbf",
+    "spine": "战略",
+    "quoteNote": "已用 Google Books 全文检索逐字核对：本书全部引用均在书内命中（美国 Crown 版 8v14BB_RW_EC / 英国 Profile 版 nTU65JgxgOAC）。标为「原文 · 书内命中」的句子是从原书正文检索到的逐字片段。",
+    "value": "它提供的是一个把「我们有很多想做的事」翻译成「当前真正的挑战是什么、总体怎么打、哪几个动作互相加强」的强制格式，外加一张「我们是不是在用目标冒充战略」的自检表——练的正是技术人最缺的那块肌肉：主动取舍，并承担取舍的后果。",
+    "points": [
+      {
+        "id": "zl-1",
+        "name": "坏战略的四个特征（four hallmarks of bad strategy）",
+        "what": "坏战略不是「没有战略」，而是有明确病灶：空话与模板化套话、不能直面挑战、把目标当战略、糟糕的战略性目标。",
+        "why": "这是一张诊断清单。读任何一份战略 PPT，先过这四条，几分钟就能判断它是战略还是愿望清单——对习惯用框架说话的技术人，这是最实用的第一道过滤器。",
+        "where": "中文版第一部分「好战略可遇不可求」（英文对应第 1 章 Good Strategy Is Unexpected 一带，章号未核查）",
+        "quotes": [
+          {
+            "en": "Bad strategy is not simply the absence of good strategy. It grows out of specific misconceptions and leadership dysfunctions.",
+            "zh": "坏战略不是简单的好战略的缺失，它起源于一些特定的认知误区和领导失误。",
+            "src": "https://books.google.com/books/feeds/volumes?q=%22Bad+strategy+is+not+simply+the+absence+of+good+strategy%22",
+            "conf": "verified",
+            "note": "书内逐字命中（Crown 版）。此前这句的英文措辞只能靠二手来源，现已确认——中译与中信版一致"
+          },
+          {
+            "en": "Bad strategy is not simply the absence of good strategy. It grows out of specific misconceptions and leadership dysfunctions.",
+            "zh": "坏战略不是简单的好战略的缺失，它起源于一些特定的认知误区和领导失误。",
+            "src": "https://books.google.com/books/feeds/volumes?q=%22Bad+strategy+is+not+simply+the+absence+of+good+strategy%22",
+            "conf": "verified",
+            "note": "书内逐字命中（Crown 版）。此前这句的英文措辞只能靠二手来源，现已确认——中译与中信版一致"
+          },
+          {
+            "en": "Bad strategy is not simply the absence of good strategy. It grows out of specific misconceptions and leadership dysfunctions.",
+            "zh": "坏战略不是简单的好战略的缺失，它起源于一些特定的认知误区和领导失误。",
+            "src": "https://books.google.com/books/feeds/volumes?q=%22Bad+strategy+is+not+simply+the+absence+of+good+strategy%22",
+            "conf": "verified",
+            "note": "书内逐字命中（Crown 版）。此前这句的英文措辞只能靠二手来源，现已确认——中译与中信版一致"
+          },
+          {
+            "en": "",
+            "zh": "坏战略不是简单的好战略的缺失，它起源于一些特定的认知误区和领导失误。一旦你具备了发现坏战略的能力，那么你评判、影响以及制定战略的能力就会大大提高。",
+            "src": "https://book.douban.com/subject/20261700/blockquotes",
+            "conf": "verified",
+            "note": "中信版中译，多个中文来源同句；英文措辞未核查"
+          },
+          {
+            "en": "",
+            "zh": "坏战略的特征如下。·空话。空话就是一些伪装成战略理念或战略观点的废话……·不能直面挑战。坏战略无法识别或找出真正的挑战……·错把目标当战略……·糟糕的战略目标……",
+            "src": "https://book.douban.com/subject/20261700/blockquotes",
+            "conf": "verified",
+            "note": "中信版中译摘录；常见的英文标签 fluff / failure to face the challenge 等未核查，不可当引文"
+          }
+        ]
+      },
+      {
+        "id": "zl-2",
+        "name": "好战略的内核：诊断 → 指导方针 → 连贯行动（the kernel）",
+        "what": "一个战略的核心只有三件东西：诊断（diagnosis，真正的挑战是什么）、指导方针（guiding policy，总体怎么打）、连贯性行动（coherent action，哪些动作互相加强）。",
+        "why": "全书最著名的骨架，也是一个可以直接套用的写作模板。它把战略从形容词变成三段式填空题，特别适合习惯结构化表达的产品经理。",
+        "where": "引言（英文版 p.7 首次给出，p.77 展开逐项定义）",
+        "quotes": [
+          {
+            "en": "The kernel of a strategy contains three elements: a diagnosis, a guiding policy, and coherent action.",
+            "zh": "一个战略的核心包括三个要素：调查分析、指导方针以及连贯性活动。",
+            "src": "https://en.wikiquote.org/wiki/Richard_Rumelt",
+            "conf": "verified",
+            "note": "英文双源一致（Wikiquote p.7 + 豆瓣读者逐字抄录）；中译出自中信版，注意译者把 diagnosis 译作「调查分析」"
+          },
+          {
+            "en": "The kernel of strategy contains three elements: 1. A diagnosis that defines or explains the nature of the challenge. A good diagnosis simplifies the often overwhelming complexity of reality by identifying certain aspects of the situation as critical. 2. A guiding policy for dealing with the challenge. This is an overall approach chosen to cope with or overcome the obstacles identified in the diagnosis. 3. A set of coherent actions that are designed to carry out the guiding policy.",
+            "zh": "",
+            "src": "https://en.wikiquote.org/wiki/Richard_Rumelt",
+            "conf": "verified",
+            "note": "书内逐字命中，但原书作 kernel of **a** strategy，且定义项带 1./2./3. 列表编号"
+          },
+          {
+            "en": "The core of strategy work is always the same: discovering the critical factors in a situation and designing a way of co-ordinating and focusing actions to deal with those factors.",
+            "zh": "战略工作的核心始终如一：发现局势中的关键因素，并设计出一种协调和聚焦行动以应对这些因素的方法。",
+            "src": "https://books.google.com/books/feeds/volumes?q=%22discovering+the+critical+factors+in+a+situation%22",
+            "conf": "verified",
+            "note": "书内逐字命中。英国版（Profile）拼作 co-ordinating，美国版作 coordinating——跨版引用时注意"
+          },
+          {
+            "en": "The core of strategy work is always the same: discovering the critical factors in a situation and designing a way of co-ordinating and focusing actions to deal with those factors.",
+            "zh": "战略工作的核心始终如一：发现局势中的关键因素，并设计出一种协调和聚焦行动以应对这些因素的方法。",
+            "src": "https://books.google.com/books/feeds/volumes?q=%22discovering+the+critical+factors+in+a+situation%22",
+            "conf": "verified",
+            "note": "书内逐字命中。英国版（Profile）拼作 co-ordinating，美国版作 coordinating——跨版引用时注意"
+          },
+          {
+            "en": "The core of strategy work is always the same: discovering the critical factors in a situation and designing a way of co-ordinating and focusing actions to deal with those factors.",
+            "zh": "战略工作的核心始终如一：发现局势中的关键因素，并设计出一种协调和聚焦行动以应对这些因素的方法。",
+            "src": "https://books.google.com/books/feeds/volumes?q=%22discovering+the+critical+factors+in+a+situation%22",
+            "conf": "verified",
+            "note": "书内逐字命中。英国版（Profile）拼作 co-ordinating，美国版作 coordinating——跨版引用时注意"
+          }
+        ]
+      },
+      {
+        "id": "zl-3",
+        "name": "战略工作的本质是「解决问题」，不是「设定目标」",
+        "what": "把目标当战略是坏战略的核心病症。领导者的责任是判断哪条路径最有效，然后集中力量去做。",
+        "why": "直接拆掉「明年增长 20%」式伪战略。技术人常见的错位是把 OKR 当战略——这一条把讨论从「要什么结果」拉回「要攻克什么障碍」。",
+        "where": "中文版「引言：好战略的力量：征服各种挑战」",
+        "quotes": [
+          {
+            "en": "",
+            "zh": "战略工作的本质并不是「设定目标」，而是「解决问题」。",
+            "src": "https://book.douban.com/subject/20261700/blockquotes",
+            "conf": "verified",
+            "note": "中信版中译摘录，英文原句未核查"
+          },
+          {
+            "en": "When organizations are unable to make new strategies — when people evade the work of choosing among different paths into the future — then you get vague mom-and-apple-pie goals that everyone can agree on. Such goals are direct evidence of leadership's insufficient will or political power to make or enforce hard choices.",
+            "zh": "",
+            "src": "https://en.wikiquote.org/wiki/Richard_Rumelt",
+            "conf": "verified",
+            "note": "书内逐字命中（Crown 版 p.64）。措辞已按原书修正：into the future（非 in）、goals that everyone（非 goals everyone）"
+          }
+        ]
+      },
+      {
+        "id": "zl-4",
+        "name": "近似目标（proximate objectives）",
+        "what": "战略目标必须「近到可执行」。越远大的目标越无法指导今天的行动，所以要把它降解成一串当下可达成、且能积累优势的近似目标。",
+        "why": "技术型管理者最容易把「三年愿景」当战略。这一条给出的是把愿景切到可执行粒度的方法，也是「如何不把 OKR 写成许愿」的具体答案。",
+        "where": "中文版章节「制定近似目标」（中文摘录第 111 页）",
+        "quotes": [
+          {
+            "en": "",
+            "zh": "领导者都有一个重要职责，就是弱化问题的复杂性和模糊性，并在简化之后提供给自己的组织，而这个经过简化的问题是可以解决的。",
+            "src": "https://book.douban.com/subject/20261700/blockquotes",
+            "conf": "verified",
+            "note": "中信版中译摘录，英文原句未核查"
+          },
+          {
+            "en": "A leader's most important job is creating and constantly adjusting this strategic bridge between goals and objectives.",
+            "zh": "",
+            "src": "https://en.wikiquote.org/wiki/Richard_Rumelt",
+            "conf": "verified",
+            "note": "p.52。领导者最重要的职责，是在「目标」与「可执行的目的」之间持续搭桥——单一来源"
+          }
+        ]
+      },
+      {
+        "id": "zl-5",
+        "name": "力量的来源与杠杆（sources of power / leverage）",
+        "what": "好战略靠在关键点上集中力量制造放大效果，而不是把资源均摊到所有方向。全书第二部分整块讲九种力量来源。",
+        "why": "把「战略」从形容词变成可操作的杠杆点搜索：哪里能用很小的投入撬动系统行为的改变。对做增长和产品定位的人，这是最可迁移的一节。",
+        "where": "第二部分「力量的来源」（中文版简介概括为发挥杠杆作用、强化短板、秉持动态视角、利用惯性等；九章英文标题的对应未核查）",
+        "quotes": [
+          {
+            "en": "Instead, a talented leader identifies the one or two critical issues in the situation—the pivot points that can multiply the effectiveness of effort—and then focuses and concentrates action and resources on them.",
+            "zh": "",
+            "src": "https://en.wikiquote.org/wiki/Richard_Rumelt",
+            "conf": "verified",
+            "note": "p.1–2，英文双源近乎逐字一致"
+          }
+        ]
+      },
+      {
+        "id": "zl-6",
+        "name": "链环系统（chain-link systems）",
+        "what": "系统的强度取决于最弱的一环，因此环环相扣且管理得当的系统所创造的卓越，是无法被局部复制的。",
+        "why": "解释为什么「抄走对手某一个动作」没用——优势来自彼此加强的一整套活动；也解释了短板不补，长板就没有意义。书里用宜家做例子。",
+        "where": "中文版摘录第 122–123 页（宜家案例），属第二部分",
+        "quotes": [
+          {
+            "en": "",
+            "zh": "宜家家居的经验告诉我们，在打造持久的战略优势时，天才的领导者总是试图采取一系列相互衔接、环环相扣的行动。",
+            "src": "https://book.douban.com/subject/20261700/blockquotes",
+            "conf": "verified",
+            "note": "中信版中译摘录（第 123 页），英文原句未核查"
+          },
+          {
+            "en": "",
+            "zh": "环环相扣而管理得当的系统所创造的卓越是无法复制的。",
+            "src": "https://book.douban.com/subject/20261700/blockquotes",
+            "conf": "verified",
+            "note": "中信版中译摘录（第 122 页）"
+          }
+        ]
+      },
+      {
+        "id": "zl-7",
+        "name": "设计式思维：战略是设计出来的，不是套出来的（using design）",
+        "what": "战略是针对具体局势设计出来的近似解，不是从框架、矩阵、三角图里推导出来的结论。好战略几乎总是看起来简单、明显。",
+        "why": "给「框架依赖症」解毒。产品经理容易信任方法论模板，这一条提醒你把问题当成一个需要设计的具体局势，而不是套模板。",
+        "where": "第二部分（对应中文版简介中「设计思维的力量」的表述）",
+        "quotes": [
+          {
+            "en": "Good strategy almost always looks this simple and obvious and does not take a thick deck of PowerPoint slides to explain. It does not pop out of some 'strategic management' tool, matrix, chart, triangle, or fill-in-the-blanks scheme.",
+            "zh": "",
+            "src": "https://en.wikiquote.org/wiki/Richard_Rumelt",
+            "conf": "verified",
+            "note": "p.1–2，单一来源"
+          }
+        ]
+      },
+      {
+        "id": "zl-8",
+        "name": "聚焦与说「不」：战略同样关乎不做什么（focus）",
+        "what": "好战略要求领导者愿意且能够对大量行动和利益说「不」。战略至少同样关乎一个组织不做什么，就像它关乎做什么一样。",
+        "why": "全书对经营者最狠、也最难执行的一条。资源永远不够，不取舍就没有战略——这正是从「技术负责」转向「经营负责」时最需要承担的部分。",
+        "where": "英文版 p.20；中文摘录引自章节「好战略可遇不可求」（标注 015 页）",
+        "quotes": [
+          {
+            "en": "Good strategy requires leaders who are willing and able to say no to a wide variety of actions and interests. Strategy is at least as much about what an organization does not do as it is about what it does.",
+            "zh": "要制定好战略，领导者就要向多种行为和利益说「不」。战略要求一个组织有所为、有所不为，二者必须并重，不可偏废其一。",
+            "src": "https://en.wikiquote.org/wiki/Richard_Rumelt",
+            "conf": "verified",
+            "note": "英文双源一致（其中一个来源有拼写错误 dose not do，属独立转录）；中译为二手"
+          }
+        ]
+      },
+      {
+        "id": "zl-9",
+        "name": "增长陷阱：什么才算「健康的增长」",
+        "what": "健康的增长是市场需求增长、能力深化、产品与技能出类拔萃的结果，而不是处心积虑「策划」出来的。",
+        "why": "直接质疑「上了规模才算成功」的默认假设，给「该不该扩张、什么时候扩张」提供判据。对做惯了从 0 到 1 的人，这一条也解释了为什么盲目铺量会稀释优势。",
+        "where": "中文版摘录第 164 页，属第二部分「增长」",
+        "quotes": [
+          {
+            "en": "",
+            "zh": "健康的增长不需要处心积虑的策划，它是企业市场需求增加的结果，是企业能力拓展、深化的结果……",
+            "src": "https://book.douban.com/subject/20261700/blockquotes",
+            "conf": "verified",
+            "note": "中信版中译摘录，英文原句未核查"
+          }
+        ]
+      },
+      {
+        "id": "zl-10",
+        "name": "惯性、熵与优势的腐化",
+        "what": "优势企业得势后会松弛懒散，更依赖前期资源、更少紧密协调，最后沦为新一轮新兴企业的牺牲品。鲁梅尔特称之为「生命的轮回」。",
+        "why": "解释在位者为什么脆弱，也提示个人和团队「舒适即衰退」。这是全书时间维度最强的一章，适合对照自己所在的业务判断它在哪个阶段。",
+        "where": "中文版摘录第 139 页，属第二部分「惯性与熵」",
+        "quotes": [
+          {
+            "en": "",
+            "zh": "……它们会竭力通过并购其他企业给人制造一种依然生机勃勃的表象。当它们固有的资源基础最终变得过时落伍之际，它们也会沦为新一轮新兴企业的牺牲品。这是生命的轮回。",
+            "src": "https://book.douban.com/subject/20261700/blockquotes",
+            "conf": "verified",
+            "note": "中信版中译摘录，英文原句未核查"
+          }
+        ]
+      },
+      {
+        "id": "zl-11",
+        "name": "战略接近判断而非科学：三项可训练的思维技能",
+        "what": "战略建立在固有知识与经验之上，是务实的预期，不是精确科学。培养战略思维要练三项技能：克服目光短浅的工具、自我怀疑的能力、记录并复盘自己判断的习惯。",
+        "why": "把「战略能力」落成个人可训练的行为——尤其第三条「记录自己的判断」，是最容易执行、也最少人做的自我修炼。",
+        "where": "中文摘录第 258、280 页，属第三部分「像战略家一样思考」",
+        "quotes": [
+          {
+            "en": "",
+            "zh": "要培养正确的战略思维，你必须掌握三项技能……第一……多种有效的工具……第二，你必须培养自我怀疑的能力。第三，你必须养成记录自己判断的习惯……",
+            "src": "https://book.douban.com/subject/20261700/blockquotes",
+            "conf": "verified",
+            "note": "中信版中译摘录（第 280 页），英文原句未核查"
+          },
+          {
+            "en": "",
+            "zh": "没有行动，世界仍然只是一个观念。",
+            "src": "https://book.douban.com/subject/20261700/blockquotes",
+            "conf": "verified",
+            "note": "第 84 页，书中引用的乔治·多里奥（Georges Doriot）座右铭"
+          }
+        ]
+      },
+      {
+        "id": "zl-12",
+        "name": "案例群：把三件套用在真实局势上",
+        "what": "特拉法加海战、坎尼会战、两次伊拉克战争（含沙漠风暴）、乔布斯回归 Apple 的聚焦、沃尔玛、宜家、英伟达、星巴克、盖蒂信托、洛杉矶联合学区等。",
+        "why": "案例不是装饰，而是「诊断—方针—连贯行动」三件套的示范。Apple 一例尤其值得看：承认自己打不赢标准战，于是等待下一个大机会——这种反直觉的战略定力，对技术出身的人最有冲击力。",
+        "where": "贯穿全书（Apple 一例见 p.14；案例名单见出版社英文简介）",
+        "quotes": [
+          {
+            "en": "He did not attack my argument. He didn't agree with it, either. He just smiled and said, 'I am going to wait for the next big thing.'",
+            "zh": "",
+            "src": "https://en.wikiquote.org/wiki/Richard_Rumelt",
+            "conf": "verified",
+            "note": "p.14，书中记述 1998 年与乔布斯的对话，轶事另有一个访谈来源呼应"
+          }
+        ]
+      }
+    ],
+    "doubtful": [
+      {
+        "text": "「A good strategy does not require a detailed plan」",
+        "why": "在 Wikiquote、豆瓣英文摘录、中文全文检索中都找不到支持来源。找不到不等于不存在，但目前不能当原书引文使用；可核实的相邻说法只有「好战略不需要厚厚一叠 PPT」（p.1–2）。"
+      },
+      {
+        "text": "「the kernel of good strategy」这个确切字串",
+        "why": "原书可核实的用词是 the kernel（内核），句式是 p.7 与 p.77 的两条。这个字串很可能是读者对引言小节标题的转述，不要当逐字引文。"
+      },
+      {
+        "text": "「Strategy is about choosing」",
+        "why": "未在任何可核实来源中找到。相近表述是 p.64 的 evade the work of choosing 与 p.20 的战略关乎不做什么。"
+      },
+      {
+        "text": "归属警示：「The essence of strategy is choosing what not to do」和「Strategy is about making choices, trade-offs; it's about deliberately choosing to be different.」",
+        "why": "这两句常被挂到鲁梅尔特名下，但实际出自 Michael Porter, What is Strategy?, Harvard Business Review, 1996, p.70。引用时不要记错作者。"
+      },
+      {
+        "text": "「坏战略不是简单的好战略的缺失」的英文原句措辞",
+        "why": "中文版译文有多个来源互相印证，比较可靠；但「Bad strategy is not simply the absence of good strategy」这句英文我没能核到原书或麦肯锡原文（相关站点在本环境不可达），所以只标注为中译可靠、英文存疑。"
+      }
+    ]
+  },
+  {
+    "id": "honggou",
+    "title": "跨越鸿沟",
+    "en": "Crossing the Chasm",
+    "author": "杰弗里·摩尔（Geoffrey A. Moore）",
+    "edition": "HarperBusiness 1991 初版，1999 修订，2014 第 3 版；中译《跨越鸿沟：颠覆性产品营销指南（原书第3版）》，祝惠娇 译，机械工业出版社 2022-10",
+    "color": "#3f8f6a",
+    "spine": "鸿沟",
+    "quoteNote": "已用 Google Books 全文检索核对：本书 10 条引用中 9 条在书内逐字命中（Wiley 1998 修订版 / HarperBusiness 2014 第 3 版）。仅「整体产品」的措辞（出自 Regis McKenna，非摩尔）与「big fish, small pond」一句的证据较弱，已单独标注。",
+    "value": "它第一次把「我做出了好东西」和「市场会为此付钱」之间的那道断层，变成一张可以按顺序执行、也可以拿去否决自己直觉的作战清单：先用一个足够窄的滩头阵地换来口碑，再用整体产品把口碑变成主流客户敢买的理由。它不教你怎么把产品做得更好，它教你怎么让市场更容易买。",
+    "points": [
+      {
+        "id": "hg-1",
+        "name": "技术采用生命周期与五类采用者（technology adoption life cycle）",
+        "what": "罗杰斯扩散理论的商业改写：innovators（技术热衷者）→ early adopters（有远见者）→ early majority（实用主义者）→ late majority（保守主义者）→ laggards（落后者）。",
+        "why": "这是全书的地基：每一类人买产品的理由根本不同，不存在一条能贯穿全局的话术。它让「产品卖不动」从玄学变成可诊断的分段问题——这对习惯归因于「功能还不够好」的技术人尤其重要。",
+        "where": "第 1 章 The High-Tech Marketing Illusion",
+        "quotes": []
+      },
+      {
+        "id": "hg-2",
+        "name": "鸿沟到底在哪里：有远见者与实用主义者之间",
+        "what": "断裂不是发生在 innovators 与 early adopters 之间，而是在 early adopters（有远见者）与 early majority（实用主义者）之间。前者到后者并不是平滑过渡，而是一道深渊。",
+        "why": "这是全书最常被记错的一点，也最容易致命：很多人把资源投在「教育更早期的用户」上，而真正需要攻克的是实用主义者。把资源和焦虑放对位置，是这一条的全部价值。",
+        "where": "第一部分 Discovering the Chasm ／ 第 2 章收束",
+        "quotes": [
+          {
+            "en": "The point of greatest peril in the development of a high-tech market lies in making the transition from an early market dominated by a few visionary customers to a mainstream market dominated by a large block of customers who are predominantly pragmatists in orientation.",
+            "zh": "",
+            "src": "https://grahammann.net/book-notes/crossing-the-chasm-geoffrey-moore",
+            "conf": "verified",
+            "note": "全书最著名的一句，出自书首导言；中文版译文在公开检索片段中被截断，未能取到完整译句"
+          }
+        ]
+      },
+      {
+        "id": "hg-3",
+        "name": "为什么早期客户能忍受不完整产品，主流客户不能",
+        "what": "早期采用者买的不是技术本身，而是「变革工具」（a change agent）——抢先于竞争对手的机会；早期大众买的是「生产力改进」（a productivity improvement），要的是 evolution, not revolution。",
+        "why": "解释了最令人困惑的商业现象：为什么早期口碑爆棚的产品会突然失速。对产品经理的直接含义是——同一个功能，在这两类客户眼里一个是机会，一个是风险。",
+        "where": "第 1 章",
+        "quotes": [
+          {
+            "en": "They do not expect, therefore, to be buying a well-tested product with an extensive list of industry references. Indeed, if such a reference base exists, it may actually turn them off",
+            "zh": "",
+            "src": "https://en.wikiquote.org/wiki/Geoffrey_Moore",
+            "conf": "verified",
+            "note": "书内逐字命中（Wiley 1998 版）。措辞已按原书修正：well-tested（原经 Wikiquote 转录处为 well—tested）"
+          },
+          {
+            "en": "early majority want to buy a productivity improvement for existing operations. They are looking to minimize the discontinuity with the old ways.",
+            "zh": "早期大众想买的，是「对现有业务的生产力改进」——他们要的是把与旧方式的断裂降到最小。",
+            "src": "https://books.google.com/books/feeds/volumes?q=%22want+to+buy+a+productivity+improvement+for+existing+operations%22",
+            "conf": "verified",
+            "note": "书内逐字命中（第 3 版）。这句和上一条对照记，就是「跨越鸿沟」的购买动机分水岭"
+          },
+          {
+            "en": "What the early adopter is buying, as we shall see in greater detail in Chapter 2, is some kind of change agent.",
+            "zh": "早期采用者买的，是一种「变革工具」。",
+            "src": "https://books.google.com/books/feeds/volumes?q=%22is+some+kind+of+change+agent%22",
+            "conf": "verified",
+            "note": "书内逐字命中（第 3 版）。注意原书是 some kind of change agent，不是 a change agent"
+          },
+          {
+            "en": "early majority want to buy a productivity improvement for existing operations. They are looking to minimize the discontinuity with the old ways.",
+            "zh": "早期大众想买的，是「对现有业务的生产力改进」——他们要的是把与旧方式的断裂降到最小。",
+            "src": "https://books.google.com/books/feeds/volumes?q=%22want+to+buy+a+productivity+improvement+for+existing+operations%22",
+            "conf": "verified",
+            "note": "书内逐字命中（第 3 版）。这句和上一条对照记，就是「跨越鸿沟」的购买动机分水岭"
+          }
+        ]
+      },
+      {
+        "id": "hg-4",
+        "name": "整体产品（whole product）",
+        "what": "主流客户买的不是核心产品，而是能端到端解决其问题的一切：核心产品 + 服务、支持、互补品、生态等周边配套。早期市场愿意自己把缺的部分拼起来，主流市场不会。",
+        "why": "这是全书对产品经理最可操作的清单式概念。做法是倒推客户的 compelling reason to buy，再逐项补齐缺口——正好是技术型 PM 最擅长的那种「缺口清单」工作。",
+        "where": "第 5 章 Assemble the Invasion Force（概念在第 2 章引入）",
+        "quotes": [
+          {
+            "en": "a generic or core product, augmented by everything that is needed for the customer to have a compelling reason to buy",
+            "zh": "",
+            "src": "https://en.wikipedia.org/wiki/Whole_product",
+            "conf": "secondary",
+            "note": "⚠️ 概念确属 Regis McKenna（MIT Press《Situated Design Methods》2021 明确写 The concept was first introduced by Regis McKenna (1986)），但《The Regis Touch》本身没有全文检索，所以这句「逐字」措辞仍无法核实——摩尔是把它带火的人，别记错出处"
+          }
+        ]
+      },
+      {
+        "id": "hg-5",
+        "name": "滩头阵地（beachhead）：只打一个足够窄的点",
+        "what": "跨越期只选一个极度具体、极度狭窄的利基市场切入。选点标准不只是「这个市场多大」，而是「它能通往哪些相邻市场」。",
+        "why": "把「我们该先打谁」从拍脑袋变成两个可比较的筛子：够窄吗？有出口吗？这是从「什么都想做」转向「先赢一场」的第一个具体决策。",
+        "where": "第 4 章 Target the Point of Attack",
+        "quotes": [
+          {
+            "en": "big fish, small pond",
+            "zh": "在小池塘里当大鱼。",
+            "src": "https://grahammann.net/book-notes/crossing-the-chasm-geoffrey-moore",
+            "conf": "secondary",
+            "note": "「big fish, small pond」在书内（索引 p.69）。但流行版本里的「Segment. Segment. Segment.」在书内查不到证据，已剔除，不要当原句引用"
+          }
+        ]
+      },
+      {
+        "id": "hg-6",
+        "name": "保龄球道（bowling alley）：靠相邻性扩张，而不是靠想象力",
+        "what": "拿下第一个细分之后，像保龄球一样去击倒相邻的下一个细分；每拿下一个，就多一组可复用的标杆客户与口碑。",
+        "why": "给了从 1 到 N 一条有纪律的路径。它约束了创业者「不断另起炉灶换赛道」的冲动——扩张的合法性来自相邻性，而不是新故事的吸引力。",
+        "where": "第二部分选点与扩张主题块（第 4–5 章）",
+        "quotes": []
+      },
+      {
+        "id": "hg-7",
+        "name": "D-Day 类比：集中优势兵力，打下来就守住",
+        "what": "跨越鸿沟被比作诺曼底登陆——不做全球铺开的「全面进攻」，而是挑一个点、投入超额资源打下来，然后 dig in and hold。",
+        "why": "这是对初创公司「到处都做一点」本能最直接的一记反驳。对资源永远不够的小团队，「集中」不是美德而是唯一可行解。",
+        "where": "第 3 章 The D-Day Analogy",
+        "quotes": [
+          {
+            "en": "Entering the mainstream market is an act of burglary, of breaking and entering, of deception, often even of stealth. Mapping out a global assault plan, attacking on all fronts at once, may work for massively intimidating market leaders who already have troops in place throughout the world, but it is just plain silly for stripling challengers. Instead, we need to pick our spots carefully, attack fiercely, and then dig in and hold.",
+            "zh": "",
+            "src": "https://en.wikiquote.org/wiki/Geoffrey_Moore",
+            "conf": "verified",
+            "note": "p.54。全书语气最锋利的一段，也是「集中兵力」最完整的表述"
+          }
+        ]
+      },
+      {
+        "id": "hg-8",
+        "name": "「抢滩 + 扩张」的完整作战顺序",
+        "what": "选点（beachhead）→ 组队与整体产品（whole product）→ 定义战场（positioning）→ 发动进攻（distribution / pricing）。这就是第二部分四章的结构本身。",
+        "why": "第二部分可以当成一份按顺序执行的作战计划，而不是四个孤立概念。读书时按这个顺序推进，比零散记概念更有用。",
+        "where": "第二部分整体",
+        "quotes": []
+      },
+      {
+        "id": "hg-9",
+        "name": "跨越期必须从「销售驱动」转向「市场驱动」",
+        "what": "在 5 到 10 个细分里各拿两三个客户，产生不了口碑；在同一个细分里拿到四五个客户，口碑就起来了。追求广度会毁掉跨越。",
+        "why": "这是一条可以立刻拿来否决自家 pipeline 的判据。看销售漏斗里客户的分布，就能判断这家公司是在跨越，还是在原地铺摊子。",
+        "where": "第 3 章",
+        "quotes": []
+      },
+      {
+        "id": "hg-10",
+        "name": "定位要让实用主义者「能比较」",
+        "what": "实用主义者不比较就不买——竞争的存在反而是购买的前提。摩尔建议设两个参照竞争者：market alternative（客户多年来一直在买的东西）和 product alternative（同样使用这项颠覆性技术的另一家公司）。",
+        "why": "颠覆性产品最常犯的错是「没有可比对象」，于是客户干脆不决策。这一条把定位从「讲清我多好」转成「给客户一把可比较的尺子」。",
+        "where": "第 6 章 Define the Battle",
+        "quotes": [
+          {
+            "en": "Companies focus on making products easier to sell because that is what they are worried about—selling. But the correct goal is to make them easier to buy.",
+            "zh": "公司总想着让产品更好卖，因为他们担心的就是「卖」。但正确的目标是让产品**更好买**。",
+            "src": "https://grahammann.net/book-notes/crossing-the-chasm-geoffrey-moore",
+            "conf": "verified",
+            "note": "书内逐字命中。⚠️ 流行版本「The correct goal isn't to make products easier to sell — it's to make them easier to buy」是改写，原书没有 isn't…it's 这个结构"
+          },
+          {
+            "en": "You need to understand that informed intuition, rather than analytical reason, is the most trustworthy decision-making tool to use.",
+            "zh": "",
+            "src": "https://en.wikiquote.org/wiki/Geoffrey_Moore",
+            "conf": "verified",
+            "note": "书内逐字命中。注意句尾有 to use"
+          }
+        ]
+      },
+      {
+        "id": "hg-11",
+        "name": "跨越期需要「异常的公司统一度」",
+        "what": "跨越期 ultimately requires achieving an unusual degree of company unity during the crossing period——因为资源必须被强行集中。",
+        "why": "这一条把本书从营销书变成组织书：跨越鸿沟最大的阻力往往来自公司内部（别的产品线、别的区域都在要资源），而不是外部市场。",
+        "where": "第一部分开篇",
+        "quotes": [
+          {
+            "en": "ultimately requires achieving an unusual degree of company unity during the crossing period",
+            "zh": "最终要求公司在这段时间里达到一种非同寻常的统一度。",
+            "src": "https://en.wikiquote.org/wiki/Geoffrey_Moore",
+            "conf": "verified",
+            "note": "书内逐字命中。中文为直译，非出版译文"
+          }
+        ]
+      },
+      {
+        "id": "hg-12",
+        "name": "市场的定义，与「目标客户 ≠ 目标市场」",
+        "what": "市场是「一组有共同需求、且在购买决策时互相参照（reference each other）的实际或潜在客户」。如果两个人因为同样理由买同样的产品，但彼此无法互相参照，他们就不属于同一个市场。",
+        "why": "这是一个可以拿来校对自家「目标市场」定义的操作性定义；也解释了为什么按人口统计或行业分类做的细分经常失效。「互相参照」才是口碑能传播的前提。",
+        "where": "市场定义见第 2 章；目标客户优先的论述见第 4 章",
+        "quotes": [
+          {
+            "en": "First, please note that we are not focusing here on target-market characterization. The place most crossing-the-chasm marketing segmentation efforts get into trouble is at the beginning, when they focus on a target market or target segment instead of on a target customer.",
+            "zh": "",
+            "src": "https://en.wikiquote.org/wiki/Geoffrey_Moore",
+            "conf": "verified",
+            "note": "p.68。做细分要先落到「一个具体客户」而不是一个市场类别"
+          }
+        ]
+      }
+    ],
+    "doubtful": [
+      {
+        "text": "「Segment. Segment. Segment.」与整体产品（whole product）的逐字措辞",
+        "why": "前者在书内查不到证据（同段落里只有 big fish, small pond）；后者出自 Regis McKenna 的《The Regis Touch》，而该书没有全文检索，只能确认概念归属、无法确认逐字原文。要精确引用需查纸本。"
+      },
+      {
+        "text": "「Segment. Segment. Segment.」与整体产品（whole product）的逐字措辞",
+        "why": "前者在书内查不到证据（同段落里只有 big fish, small pond）；后者出自 Regis McKenna 的《The Regis Touch》，而该书没有全文检索，只能确认概念归属、无法确认逐字原文。要精确引用需查纸本。"
+      },
+      {
+        "text": "流传最广的那句：「早期市场客户想要的是技术本身，主流客户想要的是能解决问题的完整产品」",
+        "why": "未能核查到书中任何一句英文原文与此话字面对应，它更像是把书中两个真实命题压缩成的流行话术，而且语义有实质偏差：书中真正掏大钱的有远见者买的是「竞争优势」，不是技术本身。**不要当摩尔的原文引用。**"
+      },
+      {
+        "text": "「摩尔提出了整体产品（whole product）概念」",
+        "why": "这个术语由 Regis McKenna 在《The Regis Touch》(1985) 中命名。摩尔是把它引入高科技营销语境并使之流行的人，说「摩尔提出」不够准确。"
+      },
+      {
+        "text": "「Pragmatists evaluate and buy whole products. Early markets will piece together the whole product themselves… mainstream markets will not.」",
+        "why": "方向与书中一致，但这条措辞来自读书笔记的概括，无法确认是逐字原文；卡片里只作为二手转述保留。"
+      },
+      {
+        "text": "第 7 章章名与结论章章名",
+        "why": "未能核查。按第二部分的「入侵」隐喻类推可能是 Launch the Invasion，但没有来源证实，不应写入卡片正文。"
+      },
+      {
+        "text": "第 3 版（2014）英文副标题中是否含 Disruptive 一词",
+        "why": "未能核查到英文逐字副标题；只有中文版书名「颠覆性产品营销指南」作为间接旁证，不足以确证。"
+      }
+    ]
+  },
+  {
+    "id": "mangge",
+    "title": "穷查理宝典",
+    "en": "Poor Charlie's Almanack",
+    "author": "查理·芒格 著，彼得·考夫曼（Peter D. Kaufman）编",
+    "edition": "The Donning Company 2005 初版；2008 扩充第三版（增至十一讲）；2023 Stripe Press 新版《The Essential Wit and Wisdom of Charles T. Munger》并提供官方免费全文。中译：上海人民（世纪文景）2010／2012，中信·大方 2016／2021，中信·芒格书院 2024，均为李继宏 译；繁体为商業周刊版",
+    "color": "#6b5bab",
+    "spine": "宝典",
+    "quoteNote": "四本书里核查强度最高的一本：Stripe Press 2023 官方免费全文版可直接逐字检索，以下英文引文多为官方全文核对。但要注意——中文译文几乎没有出版译本的逐字核对，标为「直译」的只作理解用，不要当李继宏译本原文引用。",
+    "value": "它把「聪明的工程直觉」升级成一套可复用的经营决策操作系统：用多元模型与检查清单防漏，用逆向思维排雷，用激励机制和 lollapalooza 效应理解组织与市场的非线性，并用「配得上你想要的东西」重新定义长期信任资产。",
+    "points": [
+      {
+        "id": "mg-1",
+        "name": "多元思维模型与「格栅」（latticework of mental models）",
+        "what": "孤立的事实无法使用，必须把经验挂到由多学科模型组成的「格栅」上；只掌握一两个模型会扭曲你对现实的判断——就像手里只有一把锤子。",
+        "why": "把跨学科阅读变成可调用的决策基础设施，而不是谈资。技术人天然只有一套模型（工程与逻辑），这一条是补足其他学科模型的最直接理由。",
+        "where": "第二讲（USC 1994 论基本的、普世的智慧）；第三讲（Stanford 1996 修正稿）",
+        "quotes": [
+          {
+            "en": "If the facts don't hang together on a latticework of theory, you don't have them in a usable form.",
+            "zh": "如果事实不能挂在理论的格栅上，你就没有真正掌握它们。",
+            "src": "https://www.stripe.press/poor-charlies-almanack/talk-two",
+            "conf": "verified",
+            "note": "2023 官方全文版 Talk Two 与 fs.blog 公开转录一致。中文为直译，非出版译文"
+          },
+          {
+            "en": "To the man with only a hammer, every problem tends to look pretty much like a nail.",
+            "zh": "在手握锤子的人眼里，什么问题都像钉子。",
+            "src": "https://fs.blog/great-talks/a-lesson-on-worldly-wisdom/",
+            "conf": "verified",
+            "note": "书内逐字命中（Stripe Press 2023）。措辞已按原书修正：原书是 tends to look pretty much like a nail"
+          },
+          {
+            "en": "I call it the law of the instrument, and it may be formulated as follows: Give a small boy a hammer, and he will find that everything he encounters needs pounding.",
+            "zh": "",
+            "src": "https://en.wikipedia.org/wiki/Law_of_the_instrument",
+            "conf": "verified",
+            "note": "⚠️ 出处辨析：这句「工具定律」出自 Abraham Kaplan 1964，Maslow 1966 有类似表述。芒格在书中只称其为 the old saying，是**引用者而非原创者**——别记错作者"
+          }
+        ]
+      },
+      {
+        "id": "mg-2",
+        "name": "Lollapalooza 效应：多因素同向叠加产生极端结果",
+        "what": "真正巨大的结果，往往只在大量因素朝同一方向叠加时出现。心理学上表现为多种心理倾向共同作用，造成远超单一因素之和的极端后果。",
+        "why": "它最大的用处是风险与机会的双向识别：一旦发现四五种心理倾向朝同一方向作用，结果常常「让你暴富，也可能要你的命」。理解组织与市场的非线性，就靠这一条。",
+        "where": "第四讲（1996 关于现实思维的现实思考）；第十一讲第 25 条「lollapalooza 倾向」",
+        "quotes": [
+          {
+            "en": "The fifth helpful notion is that really big effects, lollapalooza effects, will often come only from large combinations of factors.",
+            "zh": "",
+            "src": "https://www.stripe.press/poor-charlies-almanack/talk-four",
+            "conf": "verified",
+            "note": "官方全文版 Talk Four 逐字核对。书中没有词典式的单句定义，这是最接近定义的一句"
+          },
+          {
+            "en": "In such cases, you often get lollapalooza effects—which can make you rich, or they can kill you. So it's essential that you beware of lollapalooza effects.",
+            "zh": "这种情况下常会出现 lollapalooza 效应——它可能让你暴富，也可能要你的命。所以务必警惕它。",
+            "src": "https://www.stripe.press/poor-charlies-almanack/talk-eleven",
+            "conf": "verified",
+            "note": "官方全文版 Talk Eleven 逐字核对。中文为直译"
+          },
+          {
+            "en": "Lollapalooza tendency—the tendency to get extreme consequences from confluences of psychological tendencies acting in favor of a particular outcome.",
+            "zh": "lollapalooza 倾向——数种心理倾向共同作用、助推某个特定结果时，造成极端后果的倾向。",
+            "src": "https://books.google.com/books/feeds/volumes?q=%22confluences+of+psychological+tendencies+acting+in+favor+of+a+particular+outcome%22",
+            "conf": "verified",
+            "note": "书内逐字命中——这是第 11 讲第 25 条的原文标题，也是全书对 lollapalooza 最接近定义的一句"
+          }
+        ]
+      },
+      {
+        "id": "mg-3",
+        "name": "逆向思维：Invert, always invert",
+        "what": "很多难题只有从反面才能解开。与其问「如何成功」，不如先问「如何必然失败」，然后避开那些做法。芒格把这句话挂在嘴边，并注明出自大代数学家 Jacobi。",
+        "why": "成本最低的决策改进方式——不追求聪明，只排除愚蠢。对习惯「找最优解」的技术人，这是一次方法论上的转向：先做减法，再谈加法。",
+        "where": "第一讲（哈佛学校 1986 毕业典礼，书中以便签形式呈现）；第四讲；第十一讲",
+        "quotes": [
+          {
+            "en": "I had long looked for insight by inversion in the intense manner counseled by the great algebraist, Jacobi: 'Invert, always invert.'",
+            "zh": "我长期以来一直按照大代数学家雅可比所极力主张的方式，通过逆向思考来寻求洞见：「反过来想，总是反过来想。」",
+            "src": "https://www.stripe.press/poor-charlies-almanack/talk-eleven",
+            "conf": "verified",
+            "note": "书内逐字命中。「Invert, always invert」在书内出现在两处：Kaufman 的编者导言（带引号，归给 Jacobi）与芒格讲演正文。若要引「芒格自己的话」，下面这条更贴正文"
+          },
+          {
+            "en": "If you turn problems around into reverse, you often think better.",
+            "zh": "如果你把问题反过来想，往往能想得更清楚。",
+            "src": "https://books.google.com/books/feeds/volumes?q=%22turn+problems+around+into+reverse%22",
+            "conf": "verified",
+            "note": "书内逐字命中——这是芒格讲演正文里自己的说法（随后用「怎样帮助印度／怎样伤害印度」举例）。与「Invert, always invert」对照记：前者是雅可比的话，后者才是芒格的用法"
+          }
+        ]
+      },
+      {
+        "id": "mg-4",
+        "name": "能力圈（circle of competence）",
+        "what": "每个人都有自己真正有能力判断的边界，而且**扩大这个圈极难**；要在自己有优势的游戏里下注，而不是在别人有天赋、你没有的领域硬拼。",
+        "why": "给「机会取舍」一条硬标准。技术人转型时最容易犯的错，就是以为自己学得快，于是什么行业都敢进——这一条是清醒剂。",
+        "where": "第二讲（USC 1994）",
+        "quotes": [
+          {
+            "en": "You have to figure out where you've got an edge. And you've got to play within your own circle of competence.",
+            "zh": "你必须弄清楚自己的优势在哪里，并且只在自己的能力圈内行事。",
+            "src": "https://www.stripe.press/poor-charlies-almanack/talk-two",
+            "conf": "verified",
+            "note": "官方全文版 Talk Two 逐字核对。中文为网络通行译法，未逐字核实出版译本"
+          }
+        ]
+      },
+      {
+        "id": "mg-5",
+        "name": "人类误判心理学：25 种倾向清单",
+        "what": "芒格把心理学整理成 25 条可复用的误判倾向（激励、社会认同、剥夺性超级反应、一致性承诺等），作为第十一讲。注意 1995 年哈佛演讲版只讲 24 条，书中定稿为 25 条。",
+        "why": "这是「操纵与自我操纵」的解剖图，同时提升防守（不被套路）与进攻（设计激励）能力。对做产品和做管理的人，这是最实用的一讲，也最适合反复重读。",
+        "where": "第十一讲（人类误判心理学，2005 年据记忆重写）",
+        "quotes": []
+      },
+      {
+        "id": "mg-6",
+        "name": "检查清单思维（checklist）",
+        "what": "像飞行员起飞前那样，把主要模型做成一页清单逐项过一遍。芒格主张不靠「想得周全」的天赋，而靠流程。",
+        "why": "把「周全」从天赋问题变成流程问题。复杂系统里最容易漏掉的恰恰是组合效应——这正是清单要防的东西，也和你写发布 checklist 的习惯一脉相承。",
+        "where": "第十一讲；另见书中带 ✓ 的「芒格方法」清单",
+        "quotes": [
+          {
+            "en": "No pilot takes off without going through his checklist: A, B, C, D… And no bridge player who needs two extra tricks plays a hand without going down his checklist and figuring out how to do it.",
+            "zh": "没有哪个飞行员不逐项过检查清单就起飞：A、B、C、D……也没有哪个需要多拿两墩的桥牌手，会在不过一遍清单、想清楚怎么做的情况下出牌。",
+            "src": "https://www.stripe.press/poor-charlies-almanack/talk-eleven",
+            "conf": "verified",
+            "note": "官方全文版逐字核对。中文为直译"
+          }
+        ]
+      },
+      {
+        "id": "mg-7",
+        "name": "激励机制是超级力量",
+        "what": "芒格自称在理解激励威力上位列同龄人前 5%，却仍然**终生低估**它。联邦快递改为按班次付酬、施乐销售提成压制新机型都是经典案例。",
+        "why": "设计组织与合同之前，先问一句「这个激励会把好人变成什么样」。这是转型做经营者后，最需要用来自查的一根杠杆——很多管理问题其实是激励设计问题。",
+        "where": "第十一讲第 1 条；第二讲（联邦快递案例）",
+        "quotes": [
+          {
+            "en": "I think I've been in the top five percent of my age cohort almost all my adult life in understanding the power of incentives, and yet I've always underestimated that power.",
+            "zh": "我想我在理解激励的力量这方面，成年后几乎一直处在我这个年龄段的前 5%，但我始终低估了这种力量。",
+            "src": "https://www.stripe.press/poor-charlies-almanack/talk-eleven",
+            "conf": "verified",
+            "note": "官方全文版逐字核对。注意这是一句自我告解——连芒格都低估，何况我们。中文为直译"
+          }
+        ]
+      },
+      {
+        "id": "mg-8",
+        "name": "耐心与「坐等」：把不作为当成一种动作",
+        "what": "优势来自「少数几个大洞察 + 长期不动」：少付经纪费、少听噪音，税制还额外每年送你一两个百分点。",
+        "why": "把「不作为」重新定义为有正收益的动作。对习惯持续迭代、持续优化的技术人，这是最难接受也最有价值的一条——不是所有问题都该靠频繁动作解决。",
+        "where": "第二讲（USC 1994）；另见第三章「buy a few great companies, then you can sit on your ass」",
+        "quotes": [
+          {
+            "en": "There are huge advantages for an individual to get into a position where you make a few great investments and just sit on your ass: You're paying less to brokers. You're listening to less nonsense. And if it works, the governmental tax system gives you an extra one, two, or three percentage points per annum compounded.",
+            "zh": "",
+            "src": "https://www.stripe.press/poor-charlies-almanack/talk-two",
+            "conf": "verified",
+            "note": "官方全文版 Talk Two 逐字核对"
+          }
+        ]
+      },
+      {
+        "id": "mg-9",
+        "name": "双轨分析（two-track analysis）",
+        "what": "做重大决策时走两条轨道：先按理性算出真实利益与概率，再单独审视潜意识层面的心理倾向如何影响判断。",
+        "why": "给重大决策一个「理性 + 心理」的双通道复核协议。它把「我分析过了」升级为「我分析过，并且检查过自己为什么会这样分析」。",
+        "where": "第二讲（USC 1994）",
+        "quotes": []
+      },
+      {
+        "id": "mg-10",
+        "name": "品格：得到你想要的东西，最安全的办法是配得上它",
+        "what": "芒格说，得到你想要的东西最安全的办法，是让自己配得上它——这是黄金法则：你要向世界交付你自己处在另一端时也愿意购买的东西。",
+        "why": "把「信任」当成长期复利资产，而不是道德口号。做生意久了会发现，可被信任本身就是最低成本的获客与谈判杠杆。",
+        "where": "第十讲（USC Gould 法学院 2007 毕业演讲）；第一讲（1986）",
+        "quotes": [
+          {
+            "en": "the safest way to try to get what you want is to try to deserve what you want. It's such a simple idea. It's the golden rule. You want to deliver to the world what you would buy if you were on the other end.",
+            "zh": "得到你想要的东西，最安全的办法是努力让自己配得上它。这道理如此简单，它就是黄金法则：你要向世界交付的是——假如你身处另一端，你自己也愿意购买的东西。",
+            "src": "https://www.stripe.press/poor-charlies-almanack/talk-ten",
+            "conf": "verified",
+            "note": "官方全文版 Talk Ten（2007 USC 法学院毕业演讲）逐字核对。中文为直译"
+          },
+          {
+            "en": "Take a simple, basic idea and take it very seriously.",
+            "zh": "拿一个简单、基本的想法，然后极其认真地对待它。",
+            "src": "https://books.google.com/books/feeds/volumes?q=%22take+a+simple%2C+basic+idea%22",
+            "conf": "verified",
+            "note": "书内逐字命中。原书作「a simple, basic idea」与「take it very seriously」——注意 basic 和 very 两个字不能漏"
+          }
+        ]
+      },
+      {
+        "id": "mg-11",
+        "name": "终身学习：智慧的获取是一种道德义务",
+        "what": "芒格认为智慧的获取不是个人爱好，而是**道德义务**——因为你靠离开学校时已经知道的东西走不远。",
+        "why": "把学习定义为职业责任。这也是他本人每天阅读数小时的原因，对技术出身者尤其重要：技术折旧最快，学习必须制度化。",
+        "where": "第十讲（2007）；另见书中访谈问答部分",
+        "quotes": [
+          {
+            "en": "Spend each day trying to be a little wiser than you were when you woke up. Discharge your duties faithfully and well. Step by step you get ahead, but not necessarily in fast spurts. But you build discipline by preparing for fast spurts. Slug it out one inch at a time, day by day, and at the end of the day—if you live long enough—like most people, you will get out of life what you deserve.",
+            "zh": "每天睡觉时，都要比早上醒来时更聪明一点点。忠诚而出色地履行你的职责。你会一步步前进，但不一定是飞速的突进——而正是为突进做准备的过程，让你练出了纪律。一天一英寸地硬扛下去，到最后，只要你活得够久，就会像大多数人一样，得到你应得的一切。",
+            "src": "https://www.stripe.press/poor-charlies-almanack",
+            "conf": "verified",
+            "note": "出自书中访谈问答（编者问「你对年轻人有什么人生建议」）。⚠️ 广为流传的「睡前比早上起床时聪明一点点」其实是**出版方 Stripe Press 的宣传语**（go to bed a little wiser than when they woke up），芒格本人的原文是这句。中文为直译"
+          },
+          {
+            "en": "the acquisition of wisdom is a moral duty. It's not something you do just to advance in life.",
+            "zh": "获取智慧是一种道德义务，而不只是为了在人生中往上爬才做的事。",
+            "src": "https://www.stripe.press/poor-charlies-almanack/talk-ten",
+            "conf": "verified",
+            "note": "官方全文版 Talk Ten 逐字核对。中文为直译"
+          }
+        ]
+      }
+    ],
+    "doubtful": [
+      {
+        "text": "「The best thing a human being can do is to help another human being know more.」（人能做的最高尚的事，是帮助另一个人懂得更多）",
+        "why": "**未核查，且很可能不是芒格的原话**。在 Stripe Press 2023 官方全文里检索 best thing a human being 与 another human being 均为 **0 次命中**。唯一标注出处的是一个粉丝语录站，它把这句挂在 2007 年 USC 法学院演讲（Talk Ten）名下，但那一讲就在官方全文里，并不包含这句话。其余命中都是不提供一手出处的语录聚合站。"
+      },
+      {
+        "text": "「Invert, always invert.」的德语或拉丁语原形（如 man muss immer umkehren）",
+        "why": "未核查。fs.blog 写作 man muss immer umkehren 并注明「宽松翻译」，但未能在一手文献中确认 Jacobi 原话的语言与确切措辞，因此不把德语形式当原文引用。"
+      },
+      {
+        "text": "中译本对 lollapalooza 的定译",
+        "why": "两说并存：豆瓣书评引述中译本作「lollapalooza 倾向——数种心理倾向共同作用造成极端后果的倾向」（保留英文原词），网络上另有音译「鲁拉帕路萨效应」。未逐字核对纸书，所以本卡片一律保留英文原词 lollapalooza。"
+      },
+      {
+        "text": "本书所有中文译文的出版译本逐字措辞",
+        "why": "**重要**：除 lollapalooza 倾向那一条外，本次没有任何一句核到了出版译本（李继宏译）的逐字译文。卡片里标为「直译」的中文都是为便于理解而自译的，**不能当译本原文引用**；要引用译文请以纸书为准人工校对。"
+      },
+      {
+        "text": "「睡前比早上起床时聪明一点点」是芒格的原话",
+        "why": "这是普遍误传。书内确切措辞是芒格本人的 「Spend each day trying to be a little wiser than you were when you woke up.」；流传更广的「They go to bed every night a little wiser than they were when they got up」（常与 learning machines 连用）在《穷查理宝典》里同样查不到，只见于二手转引（出自芒格 2007 年 USC 毕业演讲的口头版）。引用时不要混用这两个版本。"
+      }
+    ]
+  }
+];
+/* @BOOKS_END@ */
+
+const BOOK_IX = Object.fromEntries(BOOKS.map(b => [b.id, b]));
+const ALL_POINTS = BOOKS.flatMap(b => b.points.map(p => ({ bookId:b.id, pid:p.id })));
+const TOTAL_POINTS = ALL_POINTS.length;
+
+/* ============================================================
+   2. 状态存储
+   ============================================================ */
+const LS_KEY = "dushu_v1";
+
+function blankBook(){
+  return { status:"unread", startedAt:null, finishedAt:null, currentWhere:"",
+           points:{}, quotesRead:{}, notes:{}, mine:[], review:"", _ts:0 };
+}
+function blankState(){
+  return { v:1, books:Object.fromEntries(BOOKS.map(b => [b.id, blankBook()])),
+           events:[], theme:"auto", _ts:Date.now() };
+}
+let S = blankState();
+
+function load(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(!raw) return;
+    const j = JSON.parse(raw);
+    S = Object.assign(blankState(), j);
+    S.books = Object.assign(Object.fromEntries(BOOKS.map(b => [b.id, blankBook()])), j.books || {});
+    BOOKS.forEach(b => { S.books[b.id] = Object.assign(blankBook(), S.books[b.id]); });
+    S.events = j.events || [];
+  }catch(e){ console.warn("读取本地数据失败", e); }
+}
+function save(opts){
+  if(!(opts && opts.silent)) S._ts = Date.now();
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(S)); }
+  catch(e){ toast("本地保存失败：" + e.message, "err"); }
+  if(!(opts && opts.noSync)) schedulePush();
+}
+
+/* ============================================================
+   3. 小工具
+   ============================================================ */
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const dayKey = ts => { const d = new Date(ts); return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0"); };
+const fmtTime = ts => { const d = new Date(ts); return String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0"); };
+const fmtDate = ts => { const d = new Date(ts); return (d.getMonth()+1) + "月" + d.getDate() + "日"; };
+const fmtDateFull = ts => { const d = new Date(ts); return d.getFullYear() + "年" + (d.getMonth()+1) + "月" + d.getDate() + "日"; };
+const todayISO = () => dayKey(Date.now());
+
+let toastTimer = null;
+function toast(msg, kind){
+  const el = $("#toast");
+  el.textContent = msg;
+  el.className = "show " + (kind || "");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.className = kind || ""; }, 2200);
+}
+
+function addEvent(type, bookId, text){
+  S.events.push({ id: uid(), ts: Date.now(), type, bookId, text });
+  if(S.events.length > 800) S.events = S.events.slice(-800);
+}
+
+/* 进度统计 */
+function bookStats(b){
+  const st = S.books[b.id];
+  const done = b.points.filter(p => st.points[p.id]).length;
+  const total = b.points.length;
+  return { done, total, pct: total ? Math.round(done / total * 100) : 0 };
+}
+function overallStats(){
+  let done = 0, mine = 0, finished = 0, reading = 0;
+  BOOKS.forEach(b => {
+    const s = bookStats(b);
+    done += s.done;
+    mine += (S.books[b.id].mine || []).length;
+    if(S.books[b.id].status === "done") finished++;
+    else if(S.books[b.id].status === "reading") reading++;
+  });
+  return { done, mine, finished, reading, total:TOTAL_POINTS,
+           pct: TOTAL_POINTS ? Math.round(done / TOTAL_POINTS * 100) : 0 };
+}
+function streakDays(){
+  const days = new Set(S.events.map(e => dayKey(e.ts)));
+  if(!days.size) return 0;
+  let n = 0;
+  const d = new Date();
+  if(!days.has(dayKey(d.getTime()))) d.setDate(d.getDate() - 1);   // 今天还没读，从昨天起算
+  while(days.has(dayKey(d.getTime()))){ n++; d.setDate(d.getDate() - 1); }
+  return n;
+}
+
+/* ============================================================
+   4. 路由与渲染
+   ============================================================ */
+let route = { name:"shelf" };
+const openPoints = new Set();     // 展开的要点 pid
+
+const TABS = [
+  { id:"shelf",   icon:"📚", label:"书架" },
+  { id:"journey", icon:"🗓", label:"历程" },
+  { id:"settings",icon:"⚙️", label:"设置" }
+];
+
+function go(name, bookId){
+  route = bookId ? { name, bookId } : { name };
+  window.scrollTo({ top:0 });
+  render();
+}
+
+function render(){
+  renderTop();
+  renderTabs();
+  const v = $("#view");
+  if(route.name === "shelf") v.innerHTML = viewShelf();
+  else if(route.name === "book") v.innerHTML = viewBook(route.bookId);
+  else if(route.name === "journey") v.innerHTML = viewJourney();
+  else if(route.name === "settings") v.innerHTML = viewSettings();
+}
+
+function renderTop(){
+  const t = $("#topbar");
+  if(route.name === "book"){
+    const b = BOOK_IX[route.bookId];
+    t.innerHTML = `<button class="back-btn" data-go="shelf">‹ 书架</button>
+      <div class="top-spacer"></div>
+      <span class="pill" style="--c:${b.color}">${esc(b.title)}</span>`;
+  }else{
+    t.innerHTML = `<div class="brand"><span class="dot"></span>读书清单</div>
+      <div class="top-spacer"></div>
+      <span class="hint">技术 PM 转商业</span>`;
+  }
+}
+
+function renderTabs(){
+  $("#tabbar").innerHTML = TABS.map(t =>
+    `<button data-go="${t.id}" class="${route.name === t.id || (route.name === "book" && t.id === "shelf") ? "on" : ""}">
+       <span class="ti">${t.icon}</span>${t.label}</button>`).join("");
+}
+
+/* ---------- 书架 ---------- */
+function ring(pct, color, size){
+  size = size || 46;
+  const r = (size - 6) / 2, c = 2 * Math.PI * r;
+  return `<div class="ring" style="width:${size}px;height:${size}px">
+    <svg width="${size}" height="${size}">
+      <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--line)" stroke-width="4"/>
+      <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="4"
+        stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - pct/100)}"/>
+    </svg><b>${pct}%</b></div>`;
+}
+
+function viewShelf(){
+  const o = overallStats();
+  const st = streakDays();
+  const cards = BOOKS.map(b => {
+    const s = bookStats(b), bst = S.books[b.id];
+    const label = bst.status === "done" ? "已读完" : bst.status === "reading" ? "在读" : "未开始";
+    const cls = bst.status === "done" ? "ok" : bst.status === "reading" ? "acc" : "";
+    return `<button class="book-card" data-open="${b.id}" style="--c:${b.color}">
+      <div class="bc-top">
+        <div class="cover"><span>${esc(b.spine || b.title.slice(0,4))}</span></div>
+        <div class="bc-info">
+          <h3 class="serif">${esc(b.title)}</h3>
+          <div class="bc-sub">${esc(b.author || b.en || "")}</div>
+          <span class="pill ${cls}">${label}</span>
+          <span class="pill">${s.done}/${s.total} 要点</span>
+        </div>
+        ${ring(s.pct, b.color)}
+      </div>
+      <div class="bc-prog">
+        <div class="bar"><i style="width:${s.pct}%;background:${b.color}"></i></div>
+        <b>${s.pct}%</b>
+      </div>
+    </button>`;
+  }).join("");
+
+  const banner = (!isConnected() && !localStorage.getItem(SYNC_BANNER_KEY)) ? `
+    <div class="card pad" style="margin-top:16px;display:flex;gap:11px;align-items:center;
+        border-color:color-mix(in srgb,var(--warn) 45%,var(--line))">
+      <div style="flex:1;min-width:0">
+        <b style="font-size:14px">本机还没连接同步</b>
+        <div class="hint" style="margin-top:2px">连接后，手机 / iPad / 电脑的阅读记录自动合并——只需粘贴一次令牌。</div>
+      </div>
+      <button class="btn primary sm" data-go="settings">去连接</button>
+      <button class="icon-btn" data-dismiss-sync="1" title="不再提示">✕</button>
+    </div>` : "";
+
+  return banner + `<div class="card stat-card" style="margin-top:16px">
+      <div class="stat"><b>${o.finished}</b><span>已读完</span></div>
+      <div class="stat"><b>${o.done}<span class="tiny muted">/${o.total}</span></b><span>已理解要点</span></div>
+      <div class="stat"><b>${o.mine}</b><span>我的摘抄</span></div>
+      <div class="stat"><b>${st}</b><span>连续天数</span></div>
+    </div>
+    <div class="sec-title">待读清单 · 共 ${BOOKS.length} 本</div>
+    ${cards}
+    <div class="hint" style="margin-top:18px;text-align:center">
+      点开一本书 → 读到一个要点就勾一个 → 读到好句子记进「我的摘抄」
+    </div>`;
+}
+
+/* ---------- 书籍详情 ---------- */
+const CONF = {
+  verified:  { t:"原文 · 已核查", c:"ok" },
+  secondary: { t:"二手转述", c:"warn" },
+  unverified:{ t:"未核查", c:"" }
+};
+
+function viewBook(id){
+  const b = BOOK_IX[id];
+  if(!b) return `<div class="empty">找不到这本书</div>`;
+  const bst = S.books[id];
+  const s = bookStats(b);
+
+  const statusBtn = bst.status === "unread"
+    ? `<button class="btn primary sm" data-start="${id}">开始阅读</button>`
+    : bst.status === "reading"
+      ? `<button class="btn primary sm" data-finish="${id}">标记读完</button>`
+      : `<button class="btn sm" data-reread="${id}">重新在读</button>`;
+
+  const dateLine = [
+    bst.startedAt ? `开始 ${fmtDateFull(bst.startedAt)}` : "",
+    bst.finishedAt ? `读完 ${fmtDateFull(bst.finishedAt)}` : ""
+  ].filter(Boolean).join(" · ");
+
+  const points = b.points.length ? b.points.map((p, i) => pointHtml(b, p, i)).join("")
+    : `<div class="empty"><div class="big">📖</div>内容正在整理中</div>`;
+
+  const doubtful = (b.doubtful || []).length ? `
+    <details class="tips card pad" style="margin-top:14px">
+      <summary>存疑 / 已剔除的引用（${b.doubtful.length} 条）——查看我核查不掉的内容</summary>
+      <div class="in">
+        ${b.doubtful.map(d => `<div style="margin-bottom:9px">
+          <div style="color:var(--ink)">${esc(d.text)}</div>
+          <div class="tiny muted">${esc(d.why)}</div></div>`).join("")}
+        <div class="tiny muted">这些内容流传很广，但我没能核到可靠出处，所以没有放进正式条目——避免你照着记错。</div>
+      </div>
+    </details>` : "";
+
+  return `<div class="card" style="margin-top:16px;--c:${b.color}">
+      <div class="book-hero">
+        <div class="cover"><span>${esc(b.spine || b.title.slice(0,4))}</span></div>
+        <div class="hero-meta">
+          <h1 class="serif">${esc(b.title)}</h1>
+          <div class="en">${esc(b.en || "")}</div>
+          <div class="small muted">${esc(b.author || "")}</div>
+          ${b.edition ? `<div class="tiny muted" style="margin-top:3px">${esc(b.edition)}</div>` : ""}
+          <div class="btn-row" style="margin-top:10px">${statusBtn}</div>
+          ${dateLine ? `<div class="tiny muted" style="margin-top:7px">${dateLine}</div>` : ""}
+        </div>
+      </div>
+    </div>
+
+    ${b.value ? `<div class="value-card" style="--c:${b.color};margin-top:14px">
+      <h3>这本书对你最不可替代的价值</h3><div>${esc(b.value)}</div></div>` : ""}
+
+    <div class="card pad" style="margin-top:14px">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:9px">
+        <h2 style="flex:1">阅读进度</h2>
+        <span class="pill ${s.done === s.total && s.total ? "ok" : ""}">${s.done}/${s.total} 要点 · ${s.pct}%</span>
+      </div>
+      <div class="bar"><i style="width:${s.pct}%;background:${b.color}"></i></div>
+      <div class="hint" style="margin-top:9px">勾选要点即记录一次打卡，会出现在「历程」里。</div>
+      <label class="fld" style="margin:13px 0 0"><span>当前读到哪儿（章节 / 页码，自动保存）</span>
+        <input type="text" data-where="${id}" value="${esc(bst.currentWhere || "")}"
+          placeholder="例如：第 3 篇 · 营销 / P.128" /></label>
+    </div>
+
+    <div class="sec-title">核心要点 · 阅读引导（${b.points.length}）</div>
+    ${b.quoteNote ? `<div class="sec-hint">${esc(b.quoteNote)}</div>` : ""}
+    <div class="card">${points}</div>
+
+    <div class="sec-title">读完这本书</div>
+    <div class="card pad">
+      <div class="hint" style="margin-bottom:8px">整本书的读后感、下一步要做什么。</div>
+      <textarea data-review="${id}" placeholder="读完之后，我的最大收获是…">${esc(bst.review || "")}</textarea>
+    </div>
+    ${doubtful}
+    <div style="height:8px"></div>`;
+}
+
+function pointHtml(b, p, i){
+  const bst = S.books[b.id];
+  const done = !!bst.points[p.id];
+  const isOpen = openPoints.has(p.id);
+  const quotes = (p.quotes || []);
+  const mine = (bst.mine || []).filter(m => m.pid === p.id);
+
+  const quoteHtml = quotes.map((q, qi) => {
+    const qid = p.id + ":" + qi;
+    const read = !!bst.quotesRead[qid];
+    const cf = CONF[q.conf] || CONF.unverified;
+    return `<div class="quote ${read ? "read" : ""}">
+      ${q.en ? `<div class="en">“${esc(q.en)}”</div>` : ""}
+      ${q.zh ? `<div class="zh">${esc(q.zh)}</div>` : ""}
+      <div class="src">
+        <span class="pill ${cf.c}">${cf.t}</span>
+        ${q.src ? `<a href="${esc(q.src)}" target="_blank" rel="noopener">出处 ↗</a>` : ""}
+        <button class="btn sm ghost" data-qread="${b.id}|${qid}" style="margin-left:auto">
+          ${read ? "✓ 已读到" : "标记已读到"}</button>
+      </div>
+      ${q.note ? `<div class="qnote">${esc(q.note)}</div>` : ""}</div>`;
+  }).join("");
+
+  const slotHtml = quotes.length ? "" :
+    `<div class="slot">这一条没有可公开核查的原文 —— 读到好句子时，用下面的「我的摘抄」记下来</div>`;
+
+  return `<div class="point ${done ? "done" : ""} ${isOpen ? "open" : ""}" data-point="${p.id}">
+    <div class="pt-head" data-toggle="${p.id}">
+      <div class="pt-idx">${done ? "✓" : i + 1}</div>
+      <div class="pt-t">
+        <h3>${esc(p.name)}</h3>
+        ${p.where ? `<div class="where">${esc(p.where)}</div>` : ""}
+      </div>
+      <div class="pt-caret">›</div>
+    </div>
+    <div class="pt-body">
+      ${p.what ? `<div class="what">${esc(p.what)}</div>` : ""}
+      ${p.why ? `<div class="why">${esc(p.why)}</div>` : ""}
+      <div class="pt-actions">
+        <button class="toggle-done ${done ? "on" : ""}" data-done="${b.id}|${p.id}">
+          ${done ? "✓ 已理解" : "标记已理解"}</button>
+      </div>
+
+      <div class="sub-h">可核查原文（${quotes.length}）</div>
+      ${quoteHtml}
+      ${slotHtml}
+
+      <div class="sub-h">我的摘抄（${mine.length}）</div>
+      ${mine.map(m => `<div class="myq">
+          <button class="del" data-delq="${b.id}|${m.id}">✕</button>
+          <div class="t">${esc(m.text)}</div>
+          <div class="m">${m.page ? `<span>${esc(m.page)}</span>` : ""}<span>${fmtDate(m.ts)}</span></div>
+        </div>`).join("")}
+      <div class="btn-row" style="margin-top:8px">
+        <button class="btn sm" data-addq="${b.id}|${p.id}">＋ 添加摘抄</button>
+      </div>
+
+      <div class="sub-h">我的批注</div>
+      <textarea data-note="${b.id}|${p.id}" placeholder="这一条让我想到…（自动保存）">${esc((bst.notes[p.id] || {}).text || "")}</textarea>
+    </div>
+  </div>`;
+}
+
+/* ---------- 历程 ---------- */
+function heatmap(){
+  const days = {};
+  S.events.forEach(e => { const k = dayKey(e.ts); days[k] = (days[k] || 0) + 1; });
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const start = new Date(today);
+  start.setDate(start.getDate() - 7 * 11);
+  start.setDate(start.getDate() - ((start.getDay() + 6) % 7));   // 对齐到周一
+  let cols = "";
+  for(let w = 0; w < 12; w++){
+    let cells = "";
+    for(let d = 0; d < 7; d++){
+      const dt = new Date(start); dt.setDate(start.getDate() + w * 7 + d);
+      const k = dayKey(dt.getTime()), n = days[k] || 0;
+      const lvl = n === 0 ? 0 : n === 1 ? 1 : n <= 3 ? 2 : 3;
+      const fut = dt > today;
+      cells += `<i class="hm-c l${lvl}${fut ? " fut" : ""}" title="${k}${n ? " · " + n + " 次打卡" : " · 没读"}"></i>`;
+    }
+    cols += `<div class="hm-col">${cells}</div>`;
+  }
+  const first = dayKey(start.getTime()).slice(5).replace("-", "/");
+  return `<div class="hm-wrap">
+      <div class="hm-days"><span>一</span><span></span><span>三</span><span></span><span>五</span><span></span><span>日</span></div>
+      <div class="hm">${cols}</div>
+    </div>
+    <div class="hm-legend">
+      <span>${first} 起 · 近 12 周</span>
+      <span style="margin-left:auto">少</span>
+      <i class="hm-c l0"></i><i class="hm-c l1"></i><i class="hm-c l2"></i><i class="hm-c l3"></i>
+      <span>多</span>
+    </div>`;
+}
+
+function viewJourney(){
+  const o = overallStats();
+  const heat = `<div class="card pad" style="margin-top:16px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:11px">
+        <h2 style="flex:1">打卡热力图</h2>
+        <span class="pill ${streakDays() ? "acc" : ""}">连续 ${streakDays()} 天</span>
+      </div>${heatmap()}</div>`;
+  const stats = `<div class="card stat-card" style="margin-top:16px">
+      <div class="stat"><b>${streakDays()}</b><span>连续天数</span></div>
+      <div class="stat"><b>${S.events.length}</b><span>累计打卡</span></div>
+      <div class="stat"><b>${o.done}<span class="tiny muted">/${o.total}</span></b><span>已理解要点</span></div>
+      <div class="stat"><b>${o.mine}</b><span>我的摘抄</span></div>
+    </div>`;
+  if(!S.events.length){
+    return stats + heat + `<div class="card empty" style="margin-top:14px">
+      <div class="big">📖</div>
+      <div>还没有读书记录</div>
+      <div class="hint" style="margin-top:6px">去书架点开一本书，开始你的第一天</div>
+    </div>`;
+  }
+  const byDay = {};
+  S.events.slice().sort((a, b) => b.ts - a.ts).forEach(e => {
+    const k = dayKey(e.ts);
+    (byDay[k] = byDay[k] || []).push(e);
+  });
+  const ICONS = { start:"▶️", point:"✓", quote:"✍️", finish:"🏁", reread:"↻" };
+  const days = Object.keys(byDay).sort().reverse().map(k => {
+    const items = byDay[k].map(e => `<div class="tl-item ${e.type === "finish" || e.type === "point" ? "ok" : ""}">
+        ${ICONS[e.type] || "•"} ${esc(e.text)}<span class="tm">${fmtTime(e.ts)}</span>
+        ${e.bookId && BOOK_IX[e.bookId] ? `<span class="bk">《${esc(BOOK_IX[e.bookId].title)}》</span>` : ""}
+      </div>`).join("");
+    const label = k === todayISO() ? "今天" : k;
+    return `<div class="tl-day">${label} · ${byDay[k].length} 条</div>${items}`;
+  }).join("");
+
+  return stats + heat + `
+    <div class="sec-title">读书历程</div>
+    <div class="card pad"><div class="tl">${days}</div></div>
+    <div style="height:8px"></div>`;
+}
+
+/* ---------- 设置 ---------- */
+function viewSettings(){
+  const th = S.theme || "auto";
+  const sy = syncSettings();
+  return `<div class="sec-title" style="margin-top:20px">外观</div>
+    <div class="card pad">
+      <div class="set-row">
+        <div class="lab"><b>主题</b><span>跟随系统或手动指定</span></div>
+        <div class="seg">
+          ${["auto","light","dark"].map(x => `<button data-settheme="${x}" class="${th === x ? "on" : ""}">
+            ${x === "auto" ? "跟随系统" : x === "light" ? "浅色" : "深色"}</button>`).join("")}
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-title">数据与同步</div>
+    <div class="card pad">
+      <div class="set-row" style="padding-top:0">
+        <div class="lab">
+          <b>${isConnected() ? "已连接 · 自动同步" : "尚未连接"}</b>
+          <span>${isConnected()
+            ? esc(syncTarget()) + " · 打开即合并，改动自动上传"
+            : "在这台设备上粘贴一次访问令牌，之后完全不用再管"}</span>
+        </div>
+        <span class="dot-ind ${isConnected() ? "ok" : "bad"}" id="syDot"></span>
+      </div>
+
+      ${isConnected() ? "" : `
+      <label class="fld" style="margin-top:14px"><span>访问令牌</span>
+        <input type="password" id="syToken" placeholder="github_pat_…" /></label>
+      <div class="btn-row"><button class="btn primary" data-sy="connect">连接并同步</button></div>`}
+
+      <div class="status" id="syStatus"></div>
+
+      <details class="tips"><summary>它是怎么同步的？令牌存在哪？</summary><div class="in">
+        · 数据存在你的<b>私有</b> GitHub 仓库 <span class="code">${esc(syncTarget())}</span>，只有你能读。<br/>
+        · 每台设备打开应用时自动合并云端更新，改动后约 2.5 秒自动上传——<b>不需要手动点任何按钮</b>。<br/>
+        · 切回这个页面（或从后台切回）时会再拉一次，所以手机上刚记的，电脑上一刷新就有。<br/>
+        · 合并规则：以「每本书」为单位取最后修改的一版；打卡记录按 id 去重合并，不会互相覆盖。<br/>
+        · 令牌只存在<b>这台设备的浏览器</b>里，不会写进代码、不会进仓库，导出时自动剥离。
+        ${isConnected()
+          ? `<div class="btn-row" style="margin-top:10px"><button class="btn sm ghost" data-sy="disconnect">断开这台设备的同步</button></div>`
+          : `<div style="margin-top:8px">创建令牌：GitHub → Settings → Developer settings → Fine-grained tokens → 只选仓库 <span class="code">${esc(syncSettings().repo)}</span> → 权限 <b>Contents: Read and write</b>。</div>`}
+      </div></details>
+
+      <details class="tips"><summary>高级：手动同步 / 换数据仓库</summary><div class="in">
+        <div class="btn-row" style="margin:9px 0">
+          <button class="btn sm" data-sy="pull">立即拉取云端</button>
+          <button class="btn sm" data-sy="push">立即上传本地</button>
+        </div>
+        <label class="fld"><span>数据仓库（owner/repo）</span>
+          <input type="text" id="syRepoFull" value="${esc(syncTarget())}" /></label>
+        <label class="fld"><span>文件路径</span>
+          <input type="text" id="syPath" value="${esc(syncSettings().path)}" /></label>
+        <button class="btn sm" data-sy="saverepo">保存仓库设置</button>
+      </div></details>
+    </div>
+
+    <div class="sec-title">备份</div>
+    <div class="card pad">
+      <div class="btn-row">
+        <button class="btn" data-sy="export">导出 JSON</button>
+        <button class="btn" data-sy="import">导入 JSON</button>
+        <button class="btn ghost" data-sy="reset" style="color:var(--bad)">清空所有记录</button>
+      </div>
+      <input type="file" id="importFile" accept=".json,application/json" style="display:none" />
+      <div class="hint" style="margin-top:11px">
+        共 ${S.events.length} 条打卡记录、${overallStats().mine} 条摘抄、${TOTAL_POINTS} 个待理解要点。
+      </div>
+    </div>
+
+    <div class="sec-title">说明</div>
+    <div class="card pad hint">
+      书单来自「技术型产品经理转商业」会话的精简推荐：<b>3+1 本</b>。<br/>
+      摘抄区只收录能公开核查的原文，并标注可信度；核查不到的放在各书底部的「存疑引用」里。<br/>
+      本 App 为单文件 PWA，零依赖零构建，可「添加到主屏幕」离线使用。
+    </div>
+    <div style="height:8px"></div>`;
+}
+
+/* ============================================================
+   5. 交互：事件委托
+   ============================================================ */
+document.addEventListener("click", e => {
+  const t = e.target.closest("[data-go],[data-open],[data-toggle],[data-done],[data-qread],[data-start],[data-finish],[data-reread],[data-addq],[data-delq],[data-settheme],[data-sy],[data-dismiss-sync]");
+  if(!t) return;
+  const d = t.dataset;
+
+  if(d.dismissSync){ localStorage.setItem(SYNC_BANNER_KEY, "1"); render(); return; }
+  if(d.go) return go(d.go);
+  if(d.open) return go("book", d.open);
+
+  if(d.settheme){ S.theme = d.settheme; applyTheme(); save(); render(); return; }
+
+  if(d.toggle){
+    if(openPoints.has(d.toggle)) openPoints.delete(d.toggle); else openPoints.add(d.toggle);
+    render(); return;
+  }
+  if(d.done){
+    const [bid, pid] = d.done.split("|");
+    const b = BOOK_IX[bid], bst = S.books[bid];
+    if(bst.points[pid]){ delete bst.points[pid]; }
+    else{
+      bst.points[pid] = Date.now();
+      const p = b.points.find(x => x.id === pid);
+      addEvent("point", bid, "理解要点：「" + (p ? p.name : pid) + "」");
+    }
+    bst._ts = Date.now(); save(); render(); return;
+  }
+  if(d.qread){
+    const [bid, qid] = d.qread.split("|");
+    const bst = S.books[bid];
+    if(bst.quotesRead[qid]) delete bst.quotesRead[qid];
+    else{ bst.quotesRead[qid] = Date.now(); addEvent("quote", bid, "读到一条原文引用"); }
+    bst._ts = Date.now(); save(); render(); return;
+  }
+  if(d.start || d.reread){
+    const bid = d.start || d.reread, bst = S.books[bid];
+    if(d.reread){ bst.status = "reading"; }
+    else{ bst.status = "reading"; if(!bst.startedAt) bst.startedAt = Date.now(); }
+    addEvent("start", bid, "开始阅读");
+    bst._ts = Date.now(); save(); render(); toast("开始读啦，加油 📖", "ok"); return;
+  }
+  if(d.finish){
+    const bid = d.finish, bst = S.books[bid];
+    bst.status = "done"; bst.finishedAt = Date.now();
+    if(!bst.startedAt) bst.startedAt = Date.now();
+    addEvent("finish", bid, "读完了这本书 🏁");
+    bst._ts = Date.now(); save(); render(); toast("恭喜读完一本 🎉", "ok"); return;
+  }
+  if(d.addq){
+    const [bid, pid] = d.addq.split("|");
+    pendingQuote = { bid, pid };
+    renderQuoteModal();
+    return;
+  }
+  if(d.delq){
+    const [bid, qid] = d.delq.split("|");
+    const bst = S.books[bid];
+    bst.mine = (bst.mine || []).filter(m => m.id !== qid);
+    bst._ts = Date.now(); save(); render(); toast("已删除"); return;
+  }
+  if(d.sy) return handleSync(d.sy);
+});
+
+/* 文本输入自动保存（失焦或停顿后） */
+let saveTimer = null;
+document.addEventListener("input", e => {
+  const t = e.target;
+  if(t.dataset && t.dataset.note){
+    const [bid, pid] = t.dataset.note.split("|");
+    const st = S.books[bid];
+    st.notes[pid] = { text:t.value, ts:Date.now() };
+    st._ts = Date.now();
+    clearTimeout(saveTimer); saveTimer = setTimeout(() => save(), 600);
+  }
+  if(t.dataset && t.dataset.review){
+    const bid = t.dataset.review, st = S.books[bid];
+    st.review = t.value; st._ts = Date.now();
+    clearTimeout(saveTimer); saveTimer = setTimeout(() => save(), 600);
+  }
+  if(t.dataset && t.dataset.where){
+    const bid = t.dataset.where, st = S.books[bid];
+    st.currentWhere = t.value; st._ts = Date.now();
+    clearTimeout(saveTimer); saveTimer = setTimeout(() => save(), 600);
+  }
+});
+
+/* ============================================================
+   6. 摘抄录入弹层
+   ============================================================ */
+let pendingQuote = null;
+function renderQuoteModal(){
+  const old = $("#qmodal");
+  if(old) old.remove();
+  const b = BOOK_IX[pendingQuote.bid];
+  const el = document.createElement("div");
+  el.id = "qmodal";
+  el.innerHTML = `<div style="position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.5);
+      display:flex;align-items:flex-end;justify-content:center;padding:0"
+      onclick="if(event.target===this)closeQuoteModal()">
+    <div class="card" style="width:100%;max-width:560px;border-radius:18px 18px 0 0;padding:18px;
+        max-height:88vh;overflow:auto">
+      <h2 style="margin-bottom:4px">添加摘抄</h2>
+      <div class="hint" style="margin-bottom:12px">《${esc(b.title)}》</div>
+      <label class="fld"><span>原文 / 你的转述</span>
+        <textarea id="qText" placeholder="把书里那句让你停下来的话写在这里…" style="min-height:110px"></textarea></label>
+      <label class="fld"><span>页码 / 位置（可选）</span>
+        <input type="text" id="qPage" placeholder="例如 P.128 / 第 4 章" /></label>
+      <div class="btn-row">
+        <button class="btn primary" id="qSave">保存</button>
+        <button class="btn ghost" onclick="closeQuoteModal()">取消</button>
+      </div>
+    </div></div>`;
+  document.body.appendChild(el);
+  setTimeout(() => { const x = $("#qText"); if(x) x.focus(); }, 60);
+  $("#qSave").onclick = () => {
+    const text = $("#qText").value.trim();
+    if(!text){ toast("还没写内容", "err"); return; }
+    const bst = S.books[pendingQuote.bid];
+    bst.mine = bst.mine || [];
+    bst.mine.push({ id:uid(), pid:pendingQuote.pid, text, page:$("#qPage").value.trim(), ts:Date.now() });
+    bst._ts = Date.now();
+    addEvent("quote", pendingQuote.bid, "记下一条摘抄");
+    save(); closeQuoteModal(); render(); toast("摘抄已记下 ✍️", "ok");
+  };
+}
+function closeQuoteModal(){ const el = $("#qmodal"); if(el) el.remove(); pendingQuote = null; }
+
+/* ============================================================
+   7. 云同步（GitHub 私有仓库 · Contents API）
+   ============================================================ */
+/* owner / repo / path 已内置在应用里——用户不需要知道也不需要填写。
+   唯一留在本机的是访问令牌（原因见 README「安全说明」）。 */
+const SYNC_DEFAULTS = { owner:"KaraChenDS", repo:"reading-list-data", path:"reading-list.json" };
+const SY_KEY = "dushu_sync_v1", SY_AUTO_KEY = "dushu_sync_auto";
+let pushTimer = null, pullTimer = null;
+
+function syncSettings(){
+  let j = {};
+  try{ j = JSON.parse(localStorage.getItem(SY_KEY)) || {}; }catch(e){}
+  return { owner:j.owner || SYNC_DEFAULTS.owner,
+           repo: j.repo  || SYNC_DEFAULTS.repo,
+           path: j.path  || SYNC_DEFAULTS.path,
+           token:j.token || "" };
+}
+function saveSyncSettings(o){ localStorage.setItem(SY_KEY, JSON.stringify(o)); }
+function isSyncAuto(){ return localStorage.getItem(SY_AUTO_KEY) !== "0"; }
+function isConnected(){ return !!syncSettings().token; }
+function syncTarget(){ const s = syncSettings(); return s.owner + "/" + s.repo; }
+function syncUrl(){
+  const s = syncSettings();
+  return "https://api.github.com/repos/" + encodeURIComponent(s.owner) + "/" + encodeURIComponent(s.repo) +
+         "/contents/" + encodeURIComponent(s.path).replace(/%2F/g, "/");
+}
+function syHeaders(tok){ return { Authorization:"Bearer " + tok, Accept:"application/vnd.github+json" }; }
+function b64enc(str){
+  const bytes = new TextEncoder().encode(str); let bin = "";
+  bytes.forEach(b => bin += String.fromCharCode(b));
+  return btoa(bin);
+}
+function b64dec(b64){
+  const bin = atob(b64.replace(/\s/g, "")); const bytes = new Uint8Array(bin.length);
+  for(let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
+}
+function syStatus(msg){ const el = $("#syStatus"); if(el) el.textContent = msg || ""; }
+function paintSyncDot(ok){
+  const el = document.getElementById("syDot");
+  if(el) el.className = "dot-ind " + (ok ? "ok" : "bad");
+}
+
+/* 同步载荷：剔除 token 之外的敏感项，token 本就不在 S 里 */
+function syncPayload(){
+  return { app:"读书清单", v:1, updatedAt:Date.now(), theme:S.theme, books:S.books, events:S.events };
+}
+
+/* 合并：以「每本书」为单位取 _ts 较新的一版；事件按 id 去重合并 */
+function mergeRemote(remote){
+  const r = remote || {};
+  let changed = 0;
+  BOOKS.forEach(b => {
+    const a = S.books[b.id], c = (r.books || {})[b.id];
+    if(!a || !c) return;
+    const pick = (c._ts || 0) > (a._ts || 0) ? c : a;
+    if(pick === c){ S.books[b.id] = Object.assign(blankBook(), c); changed++; }
+  });
+  const seen = new Set(S.events.map(e => e.id));
+  (r.events || []).forEach(e => { if(e && e.id && !seen.has(e.id)){ S.events.push(e); seen.add(e.id); changed++; } });
+  S.events.sort((x, y) => x.ts - y.ts);
+  // 主题是设备级偏好，不参与同步
+  return changed;
+}
+
+async function syncPush(silent){
+  const s = syncSettings();
+  if(!s.token){ if(!silent) syStatus("本机还没有连接同步。"); return; }
+  if(!silent) syStatus("正在上传…");
+  try{
+    let sha = null;
+    const g = await fetch(syncUrl(), { headers:syHeaders(s.token) });
+    if(g.ok) sha = (await g.json()).sha;
+    const body = { message:"reading list sync " + new Date().toISOString(),
+                   content:b64enc(JSON.stringify(syncPayload())) };
+    if(sha) body.sha = sha;
+    const r = await fetch(syncUrl(), { method:"PUT",
+      headers:Object.assign({ "Content-Type":"application/json" }, syHeaders(s.token)),
+      body:JSON.stringify(body) });
+    if(!r.ok){ const txt = (await r.text()).slice(0, 160); if(!silent) syStatus("上传失败 HTTP " + r.status + " " + txt); return; }
+    if(!silent) syStatus("已同步到云端 ✓");
+    paintSyncDot(true);
+  }catch(e){ if(!silent) syStatus("上传出错：" + e.message); }
+}
+
+async function syncPull(opts){
+  const silent = !!(opts && opts.silent);
+  const s = syncSettings();
+  if(!s.token){ if(!silent) syStatus("本机还没有连接同步。"); return; }
+  if(!silent) syStatus("正在下载云端…");
+  try{
+    const r = await fetch(syncUrl(), { headers:syHeaders(s.token) });
+    if(r.status === 404){
+      // 云端还没有文件：把本机数据推上去，完成首次引导
+      if(!silent) syStatus("云端还没有数据，正在用本机数据创建…");
+      paintSyncDot(true); return syncPush(silent);
+    }
+    if(!r.ok){ if(!silent) syStatus("下载失败 HTTP " + r.status + "（检查令牌权限）"); paintSyncDot(false); return; }
+    const j = await r.json();
+    const n = mergeRemote(JSON.parse(b64dec(j.content)));
+    if(n){ save({ silent:true, noSync:true }); render(); }
+    paintSyncDot(true);
+    if(!silent) syStatus(n ? "已合并 " + n + " 处云端更新 ✓" : "云端与本地已一致");
+    if(n && silent) toast("已合并其他设备的 " + n + " 处更新", "ok");
+  }catch(e){ if(!silent) syStatus("下载出错：" + e.message); paintSyncDot(false); }
+}
+
+function schedulePush(){
+  const s = syncSettings();
+  if(!s.token || !isSyncAuto()) return;
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(() => syncPush(true), 2500);
+}
+
+function handleSync(act){
+  const s = syncSettings();
+  if(act === "connect"){
+    const tok = ($("#syToken").value || "").trim();
+    if(!tok){ syStatus("还没粘贴令牌。"); return; }
+    saveSyncSettings(Object.assign({}, s, { token: tok }));
+    render();
+    toast("正在连接…");
+    return syncPull();
+  }
+  if(act === "disconnect"){
+    if(!confirm("断开后这台设备不再同步，本机数据仍保留。继续？")) return;
+    saveSyncSettings(Object.assign({}, s, { token: "" }));
+    render(); toast("已断开这台设备的同步");
+    return;
+  }
+  if(act === "saverepo"){
+    const full = ($("#syRepoFull").value || "").trim();
+    const parts = full.split("/");
+    if(parts.length !== 2 || !parts[0] || !parts[1]){ syStatus("仓库要写成 owner/repo 的形式。"); return; }
+    saveSyncSettings(Object.assign({}, s, {
+      owner: parts[0], repo: parts[1],
+      path: ($("#syPath").value || "").trim() || "reading-list.json"
+    }));
+    render(); toast("仓库设置已保存", "ok");
+    return;
+  }
+  if(act === "pull")  return syncPull();
+  if(act === "push")  return syncPush();
+  if(act === "export"){
+    const blob = new Blob([JSON.stringify(syncPayload(), null, 2)], { type:"application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "读书清单-" + todayISO() + ".json";
+    a.click(); URL.revokeObjectURL(a.href);
+    toast("已导出 JSON", "ok"); return;
+  }
+  if(act === "import"){ $("#importFile").click(); return; }
+  if(act === "reset"){
+    if(confirm("清空所有阅读记录？云端数据需要另行覆盖，此操作不可撤销。")){
+      localStorage.removeItem(LS_KEY);
+      S = blankState(); applyTheme(); save({ noSync:true }); render();
+      toast("已清空");
+    }
+    return;
+  }
+}
+
+document.addEventListener("change", e => {
+  // 失焦立即落盘，避免「边打字边点勾选」丢字
+  if(e.target.dataset && e.target.dataset.note){
+    const [bid, pid] = e.target.dataset.note.split("|");
+    S.books[bid].notes[pid] = { text:e.target.value, ts:Date.now() };
+    S.books[bid]._ts = Date.now();
+    clearTimeout(saveTimer); save();
+    return;
+  }
+  if(e.target.dataset && e.target.dataset.review){
+    const bid = e.target.dataset.review;
+    S.books[bid].review = e.target.value;
+    S.books[bid]._ts = Date.now();
+    clearTimeout(saveTimer); save();
+    return;
+  }
+  if(e.target.dataset && e.target.dataset.where){
+    const bid = e.target.dataset.where;
+    S.books[bid].currentWhere = e.target.value;
+    S.books[bid]._ts = Date.now();
+    clearTimeout(saveTimer); save();
+    return;
+  }
+  if(e.target.id !== "importFile") return;
+  const f = e.target.files[0];
+  if(!f) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    try{
+      const n = mergeRemote(JSON.parse(rd.result));
+      save({ noSync:true }); render();
+      toast(n ? "已导入并合并 " + n + " 处" : "没有新数据", "ok");
+    }catch(err){ toast("导入失败：" + err.message, "err"); }
+  };
+  rd.readAsText(f);
+  e.target.value = "";
+});
+
+/* ============================================================
+   8. 主题与启动
+   ============================================================ */
+function applyTheme(){
+  let th = S.theme || "auto";
+  if(th === "auto") th = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  document.documentElement.setAttribute("data-theme", th);
+  const meta = document.querySelector('meta[name=theme-color]');
+  if(meta) meta.setAttribute("content", th === "dark" ? "#12141c" : "#f7f3ea");
+}
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+  if((S.theme || "auto") === "auto") applyTheme();
+});
+
+if("serviceWorker" in navigator && location.protocol.startsWith("http")){
+  navigator.serviceWorker.register("sw.js").catch(() => {});
+}
+
+const SYNC_BANNER_KEY = "dushu_sync_banner";
+
+load(); applyTheme(); render();
+
+/* 同步完全自动化：打开时拉一次，从后台切回时再拉一次。
+   失败一律静默——用户不需要知道同步的存在，只在真有更新时提示。 */
+function autoPull(){
+  if(!document.hidden && isConnected() && isSyncAuto()) syncPull({ silent:true });
+}
+setTimeout(autoPull, 700);
+document.addEventListener("visibilitychange", () => { if(!document.hidden) autoPull(); });
+window.addEventListener("online", autoPull);
+</script>
+</body>
+</html>
