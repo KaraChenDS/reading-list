@@ -1811,10 +1811,20 @@ function viewSettings(){
         · 数据存在你的<b>私有</b> GitHub 仓库 <span class="code">${esc(syncTarget())}</span>，只有你能读。<br/>
         · 每台设备打开应用时自动合并云端更新，改动后约 2.5 秒自动上传——<b>不需要手动点任何按钮</b>。<br/>
         · 切回这个页面（或从后台切回）时会再拉一次，所以手机上刚记的，电脑上一刷新就有。<br/>
-        · 合并规则：以「每本书」为单位取最后修改的一版；打卡记录按 id 去重合并，不会互相覆盖。<br/>
+        · 合并规则：<b>册内逐项合并</b>——要点打卡、已读引用、摘抄、批注取并集，两台设备各记各的都不会丢；只有「状态、读到哪、读后感」按最后修改的一版。<br/>
         · 令牌只存在<b>这台设备的浏览器</b>里，不会写进代码、不会进仓库，导出时自动剥离。
         ${isConnected()
-          ? `<div class="btn-row" style="margin-top:10px"><button class="btn sm ghost" data-sy="disconnect">断开这台设备的同步</button></div>`
+          ? `<div class="btn-row" style="margin-top:10px">
+               <button class="btn sm" data-sy="link">🔗 生成新设备连接链接</button>
+               <button class="btn sm ghost" data-sy="disconnect">断开这台设备的同步</button>
+             </div>
+             <div id="dlBox" style="display:none;margin-top:10px">
+               <div class="hint" style="color:var(--warn);margin-bottom:6px">
+                 ⚠️ 这条链接<b>等同于你的令牌</b>，只在发给自己的设备时使用，别发到公开场合。令牌一旦在 GitHub 撤销，链接立刻失效。
+               </div>
+               <input type="text" id="dlInput" readonly onclick="this.select()" style="font-size:12px" />
+               <div class="hint" style="margin-top:6px">在手机 / iPad 上用浏览器打开这条链接一次，就会自动完成连接，之后永久自动同步。</div>
+             </div>`
           : `<div style="margin-top:8px">创建令牌：GitHub → Settings → Developer settings → Fine-grained tokens → 只选仓库 <span class="code">${esc(syncSettings().repo)}</span> → 权限 <b>Contents: Read and write</b>。</div>`}
       </div></details>
 
@@ -2275,6 +2285,35 @@ async function runDiag(){
   return out.join("\n");
 }
 
+/* 生成「新设备连接链接」：把本机令牌拼进 #t=，在新设备打开一次即完成连接 */
+function deviceLink(){
+  const s = syncSettings();
+  if(!s.token) return "";
+  return location.origin + location.pathname + "#t=" + encodeURIComponent(s.token);
+}
+async function copyDeviceLink(){
+  const link = deviceLink();
+  if(!link){ toast("先连接同步", "err"); return; }
+  const box = document.getElementById("dlBox"), inp = document.getElementById("dlInput");
+  if(box) box.style.display = "block";
+  if(inp) inp.value = link;
+  try{
+    await navigator.clipboard.writeText(link);
+    toast("已复制 —— 在新设备打开这条链接即可", "ok");
+  }catch(e){
+    // 退而求其次：选中后用老式 execCommand 再试一次（部分 iOS 版本 / WebView）
+    try{
+      if(inp){
+        inp.focus(); inp.select();
+        if(inp.setSelectionRange) inp.setSelectionRange(0, 99999);
+        if(document.execCommand && document.execCommand("copy")){ toast("已复制", "ok"); return; }
+      }
+    }catch(_){}
+    if(inp){ inp.focus(); inp.select(); }
+    toast("剪贴板被拒，请手动复制下面那串", "err");
+  }
+}
+
 function schedulePush(){
   const s = syncSettings();
   if(!s.token || !isSyncAuto()) return;
@@ -2312,6 +2351,7 @@ async function handleSync(act){
   }
   if(act === "pull")  return syncPull();
   if(act === "push")  return syncPush();
+  if(act === "link"){ return copyDeviceLink(); }
   if(act === "refresh"){
     if(!isConnected()){ toast("还没连接同步", "err"); return; }
     const btn = document.getElementById("syncBtn");
