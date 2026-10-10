@@ -1,5 +1,5 @@
 /* 读书清单 · 极简离线缓存：App Shell 优先，跨域 API（GitHub 同步）不缓存 */
-const CACHE = "dushu-v1";
+const CACHE = "dushu-v2";
 const ASSETS = ["./", "./index.html", "./manifest.webmanifest",
                 "./icons/icon-32.png", "./icons/icon-180.png",
                 "./icons/icon-192.png", "./icons/icon-512.png",
@@ -19,8 +19,10 @@ self.addEventListener("fetch", e => {
   const url = new URL(req.url);
   // 不缓存跨域 API（GitHub Contents API）
   if (url.origin !== location.origin) return;
+  // HTML 导航绕开 HTTP 缓存（Pages 对 HTML 设了 max-age=600），保证刷新即最新版
+  const isHTML = req.mode === "navigate" || (req.headers.get("accept") || "").includes("text/html");
   e.respondWith(
-    fetch(req).then(res => {
+    fetch(req, isHTML ? { cache: "no-store" } : undefined).then(res => {
       const copy = res.clone();
       caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {});
       return res;
