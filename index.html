@@ -1415,7 +1415,7 @@ function addEvent(type, bookId, text){
 /* 进度统计 */
 function bookStats(b){
   const st = S.books[b.id];
-  const done = b.points.filter(p => st.points[p.id]).length;
+  const done = b.points.filter(p => st.points[p.id] > 0).length;
   const total = b.points.length;
   return { done, total, pct: total ? Math.round(done / total * 100) : 0 };
 }
@@ -1462,6 +1462,7 @@ function go(name, bookId){
 function render(){
   renderTop();
   renderTabs();
+  setTimeout(paintSyncLine, 0);
   const v = $("#view");
   if(route.name === "shelf") v.innerHTML = viewShelf();
   else if(route.name === "book") v.innerHTML = viewBook(route.bookId);
@@ -1632,14 +1633,14 @@ function viewBook(id){
 
 function pointHtml(b, p, i){
   const bst = S.books[b.id];
-  const done = !!bst.points[p.id];
+  const done = bst.points[p.id] > 0;
   const isOpen = openPoints.has(p.id);
   const quotes = (p.quotes || []);
   const mine = (bst.mine || []).filter(m => m.pid === p.id);
 
   const quoteHtml = quotes.map((q, qi) => {
     const qid = p.id + ":" + qi;
-    const read = !!bst.quotesRead[qid];
+    const read = bst.quotesRead[qid] > 0;
     const cf = CONF[q.conf] || CONF.unverified;
     return `<div class="quote ${read ? "read" : ""}">
       ${q.en ? `<div class="en">“${esc(q.en)}”</div>` : ""}
@@ -1790,6 +1791,7 @@ function viewSettings(){
           <span>${isConnected()
             ? esc(syncTarget()) + " · 打开即合并，改动自动上传"
             : "在这台设备上粘贴一次访问令牌，之后完全不用再管"}</span>
+          <div class="tiny" id="syLine" style="margin-top:4px"></div>
         </div>
         <span class="dot-ind ${isConnected() ? "ok" : "bad"}" id="syDot"></span>
       </div>
@@ -1868,7 +1870,7 @@ document.addEventListener("click", e => {
   if(d.done){
     const [bid, pid] = d.done.split("|");
     const b = BOOK_IX[bid], bst = S.books[bid];
-    if(bst.points[pid]){ delete bst.points[pid]; }
+    if(bst.points[pid] > 0){ bst.points[pid] = -Date.now(); }   // 墓碑：让「取消」也能同步出去
     else{
       bst.points[pid] = Date.now();
       const p = b.points.find(x => x.id === pid);
@@ -1879,7 +1881,7 @@ document.addEventListener("click", e => {
   if(d.qread){
     const [bid, qid] = d.qread.split("|");
     const bst = S.books[bid];
-    if(bst.quotesRead[qid]) delete bst.quotesRead[qid];
+    if(bst.quotesRead[qid] > 0) bst.quotesRead[qid] = -Date.now();
     else{ bst.quotesRead[qid] = Date.now(); addEvent("quote", bid, "读到一条原文引用"); }
     bst._ts = Date.now(); save(); render(); return;
   }
@@ -2013,7 +2015,53 @@ function b64dec(b64){
   for(let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
   return new TextDecoder().decode(bytes);
 }
+const SY_LAST_KEY = "dushu_last_sync", SY_ERR_KEY = "dushu_last_error";
 function syStatus(msg){ const el = $("#syStatus"); if(el) el.textContent = msg || ""; }
+function markSyncOK(){
+  localStorage.setItem(SY_LAST_KEY, String(Date.now()));
+  localStorage.removeItem(SY_ERR_KEY);
+  paintSyncDot(true); paintSyncLine();
+}
+function markSyncFail(reason){
+  localStorage.setItem(SY_ERR_KEY, String(reason || "未知错误"));
+  paintSyncDot(false); paintSyncLine();
+}
+function humanAgo(ts){
+  const d = Date.now() - ts;
+  if(d < 60000) return "刚刚";
+  if(d < 3600000) return Math.floor(d / 60000) + " 分钟前";
+  if(d < 86400000) return Math.floor(d / 3600000) + " 小时前";
+  return Math.floor(d / 86400000) + " 天前";
+}
+/* 设置页的状态行 + 书架上的异常提示都由这里驱动 */
+function paintSyncLine(){
+  const el = document.getElementById("syLine");
+  if(el){
+    if(!isConnected()){ el.textContent = ""; return; }
+    const err = localStorage.getItem(SY_ERR_KEY);
+    const last = Number(localStorage.getItem(SY_LAST_KEY) || 0);
+    el.textContent = err ? "同步异常：" + err
+      : (last ? "上次同步 " + humanAgo(last) + "（改动会自动上传）" : "已连接，等待首次同步…");
+    el.style.color = err ? "var(--bad)" : "";
+  }
+  const banner = document.getElementById("syncWarn");
+  if(banner) banner.remove();
+  if(isConnected() && localStorage.getItem(SY_ERR_KEY)){
+    const main = document.getElementById("view");
+    if(main && route.name === "shelf"){
+      const d = document.createElement("div");
+      d.id = "syncWarn";
+      d.className = "card pad";
+      d.style.cssText = "margin-top:16px;border-color:var(--bad);background:color-mix(in srgb,var(--bad) 6%,transparent)";
+      d.innerHTML = `<b style="font-size:14px;color:var(--bad)">同步出问题了</b>
+        <div class="hint" style="margin-top:3px">${esc(localStorage.getItem(SY_ERR_KEY))}——本机记录不会丢，但暂时传不到其他设备。</div>
+        <div class="btn-row" style="margin-top:9px">
+          <button class="btn sm" data-sy="pull">重试</button>
+          <button class="btn sm ghost" data-go="settings">去设置</button></div>`;
+      main.insertBefore(d, main.firstChild);
+    }
+  }
+}
 function paintSyncDot(ok){
   const el = document.getElementById("syDot");
   if(el) el.className = "dot-ind " + (ok ? "ok" : "bad");
@@ -2024,15 +2072,54 @@ function syncPayload(){
   return { app:"读书清单", v:1, updatedAt:Date.now(), theme:S.theme, books:S.books, events:S.events };
 }
 
-/* 合并：以「每本书」为单位取 _ts 较新的一版；事件按 id 去重合并 */
+/* 合并：册内的「集合类」字段取并集（打卡/已读引用/摘抄/批注逐条合并），
+   只有「标量类」字段（状态、读到哪、读后感）才按整册 _ts 取较新的一侧。
+   这样两台设备各记各的，谁也不会把对方的打卡覆盖掉。 */
 function mergeRemote(remote){
   const r = remote || {};
   let changed = 0;
   BOOKS.forEach(b => {
     const a = S.books[b.id], c = (r.books || {})[b.id];
     if(!a || !c) return;
-    const pick = (c._ts || 0) > (a._ts || 0) ? c : a;
-    if(pick === c){ S.books[b.id] = Object.assign(blankBook(), c); changed++; }
+    const before = JSON.stringify(a);
+
+    // —— 集合类：逐键合并，同一个键上「最后一次操作」生效 ——
+    // 值为正数 = 该时刻完成；值为负数 = 该时刻取消（墓碑），所以取消操作也能跨设备生效
+    const mergeByTime = (x, y) => {
+      const A = x || {}, B = y || {}, out = {};
+      new Set(Object.keys(A).concat(Object.keys(B))).forEach(k => {
+        const p = A[k], q = B[k];
+        if(p === undefined) out[k] = q;
+        else if(q === undefined) out[k] = p;
+        else out[k] = Math.abs(q) > Math.abs(p) ? q : p;
+      });
+      return out;
+    };
+    const points     = mergeByTime(a.points, c.points);
+    const quotesRead = mergeByTime(a.quotesRead, c.quotesRead);
+
+    const notes = Object.assign({}, c.notes || {}, a.notes || {});
+    Object.keys(notes).forEach(pid => {            // 同一条批注取时间较新的
+      const x = (a.notes || {})[pid], y = (c.notes || {})[pid];
+      if(x && y) notes[pid] = ((y.ts || 0) > (x.ts || 0)) ? y : x;
+    });
+
+    const byId = {};
+    (c.mine || []).concat(a.mine || []).forEach(m => { if(m && m.id) byId[m.id] = m; });
+    const mine = Object.values(byId).sort((x, y) => (x.ts || 0) - (y.ts || 0));
+
+    // —— 标量类：取 _ts 较新的一侧，但不让「空值」抹掉已有内容 ——
+    const src = (c._ts || 0) > (a._ts || 0) ? c : a;
+    const merged = Object.assign(blankBook(), {
+      status:      src.status || a.status || c.status,
+      startedAt:   a.startedAt || c.startedAt || null,
+      finishedAt:  a.finishedAt || c.finishedAt || null,
+      currentWhere:(src.currentWhere || a.currentWhere || c.currentWhere || ""),
+      review:      (src.review || a.review || c.review || ""),
+      _ts:         Math.max(a._ts || 0, c._ts || 0)
+    }, { points, quotesRead, notes, mine });
+
+    if(JSON.stringify(merged) !== before){ S.books[b.id] = merged; changed++; }
   });
   const seen = new Set(S.events.map(e => e.id));
   (r.events || []).forEach(e => { if(e && e.id && !seen.has(e.id)){ S.events.push(e); seen.add(e.id); changed++; } });
@@ -2055,10 +2142,15 @@ async function syncPush(silent){
     const r = await fetch(syncUrl(), { method:"PUT",
       headers:Object.assign({ "Content-Type":"application/json" }, syHeaders(s.token)),
       body:JSON.stringify(body) });
-    if(!r.ok){ const txt = (await r.text()).slice(0, 160); if(!silent) syStatus("上传失败 HTTP " + r.status + " " + txt); return; }
+    if(!r.ok){
+      const txt = (await r.text()).slice(0, 160);
+      markSyncFail("上传失败 HTTP " + r.status);
+      if(!silent) syStatus("上传失败 HTTP " + r.status + " " + txt);
+      return;
+    }
+    markSyncOK();
     if(!silent) syStatus("已同步到云端 ✓");
-    paintSyncDot(true);
-  }catch(e){ if(!silent) syStatus("上传出错：" + e.message); }
+  }catch(e){ markSyncFail("上传出错：" + e.message); if(!silent) syStatus("上传出错：" + e.message); }
 }
 
 async function syncPull(opts){
@@ -2071,16 +2163,20 @@ async function syncPull(opts){
     if(r.status === 404){
       // 云端还没有文件：把本机数据推上去，完成首次引导
       if(!silent) syStatus("云端还没有数据，正在用本机数据创建…");
-      paintSyncDot(true); return syncPush(silent);
+      return syncPush(silent);
     }
-    if(!r.ok){ if(!silent) syStatus("下载失败 HTTP " + r.status + "（检查令牌权限）"); paintSyncDot(false); return; }
+    if(!r.ok){
+      markSyncFail("下载失败 HTTP " + r.status + (r.status === 401 || r.status === 403 ? "（令牌无效或权限不足）" : r.status === 404 ? "（仓库或路径不存在）" : ""));
+      if(!silent) syStatus("下载失败 HTTP " + r.status + "（检查令牌权限）");
+      return;
+    }
     const j = await r.json();
     const n = mergeRemote(JSON.parse(b64dec(j.content)));
     if(n){ save({ silent:true, noSync:true }); render(); }
-    paintSyncDot(true);
+    markSyncOK();
     if(!silent) syStatus(n ? "已合并 " + n + " 处云端更新 ✓" : "云端与本地已一致");
     if(n && silent) toast("已合并其他设备的 " + n + " 处更新", "ok");
-  }catch(e){ if(!silent) syStatus("下载出错：" + e.message); paintSyncDot(false); }
+  }catch(e){ markSyncFail("网络出错：" + e.message); if(!silent) syStatus("下载出错：" + e.message); }
 }
 
 function schedulePush(){
