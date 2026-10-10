@@ -2196,6 +2196,20 @@ if("serviceWorker" in navigator && location.protocol.startsWith("http")){
 
 const SYNC_BANNER_KEY = "dushu_sync_banner";
 
+/* 新设备一键连接：用 https://…/reading-list/#t=<令牌> 打开一次即可
+   （令牌从地址栏里读走后就立刻抹掉，不留痕） */
+(function bootstrapTokenFromHash(){
+  const m = /[#&]t=([^&]+)/.exec(location.hash || "");
+  if(!m) return;
+  try{
+    const tok = decodeURIComponent(m[1]).trim();
+    if(tok){
+      saveSyncSettings(Object.assign({}, syncSettings(), { token: tok }));
+      history.replaceState(null, "", location.pathname + location.search);
+    }
+  }catch(e){}
+})();
+
 load(); applyTheme(); render();
 
 /* 同步完全自动化：打开时拉一次，从后台切回时再拉一次。
