@@ -1894,8 +1894,9 @@ document.addEventListener("click", e => {
   }
   if(d.start || d.reread){
     const bid = d.start || d.reread, bst = S.books[bid];
-    if(d.reread){ bst.status = "reading"; }
-    else{ bst.status = "reading"; if(!bst.startedAt) bst.startedAt = Date.now(); }
+    bst.status = "reading";
+    bst.finishedAt = null;                     // 回到「在读」就不该再显示读完日期
+    if(!bst.startedAt) bst.startedAt = Date.now();
     addEvent("start", bid, "开始阅读");
     bst._ts = Date.now(); save(); render(); toast("开始读啦，加油 📖", "ok"); return;
   }
@@ -2144,10 +2145,11 @@ function mergeRemote(remote){
 
     // —— 标量类：取 _ts 较新的一侧，但不让「空值」抹掉已有内容 ——
     const src = (c._ts || 0) > (a._ts || 0) ? c : a;
+    const st = src.status || a.status || c.status;
     const merged = Object.assign(blankBook(), {
-      status:      src.status || a.status || c.status,
-      startedAt:   a.startedAt || c.startedAt || null,
-      finishedAt:  a.finishedAt || c.finishedAt || null,
+      status:      st,
+      startedAt:   src.startedAt || a.startedAt || c.startedAt || null,   // 开始时间只增不减
+      finishedAt:  st === "done" ? (src.finishedAt || a.finishedAt || c.finishedAt || null) : null,
       currentWhere:(src.currentWhere || a.currentWhere || c.currentWhere || ""),
       review:      (src.review || a.review || c.review || ""),
       _ts:         Math.max(a._ts || 0, c._ts || 0)
